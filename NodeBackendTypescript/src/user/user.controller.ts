@@ -1,5 +1,6 @@
+import { userModel } from './user.model';
 import { Request, Response, NextFunction } from 'express';
-import { User } from './user.model';
+import { MqttConnector } from '../mqtt/mqtt.connector';
 
 export class UserController {
     public getAll (req: Request, res: Response, next: NextFunction) {
@@ -7,8 +8,9 @@ export class UserController {
     }
 
     public get(req: Request, res: Response, next: NextFunction) {
-        const user = new User('cas', 'password', false);
-        user.model.save();
+        const user = new userModel({name: 'cas', password: 'password', isAdmin: false});
+        user.save();
+
         return res.send('saved user with id: ' + req.params.id);
     }
 }
