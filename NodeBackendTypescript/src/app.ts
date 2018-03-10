@@ -1,9 +1,11 @@
-import * as path from 'path';
 import * as express from 'express';
 import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
 import { UserRouter } from './user/user.router';
 import { DatabaseConnector } from './database/database.connector';
+import { AuthRouter } from './auth/auth.router';
+import { GuardRouter } from './guard/guard.router';
+import { MqttConnector } from './mqtt/mqtt.connector';
 
 const config = require('../config');
 // Creates and configures an ExpressJS web server.
@@ -17,7 +19,8 @@ class App {
         this.express = express();
         this.middleware();
         this.routes();
-        this.connectToDb();
+        DatabaseConnector.connect(config['db-connection-string'] + '/' + config['db-name']);
+        MqttConnector.connect();
     }
 
     // Configure Express middleware.
@@ -27,13 +30,11 @@ class App {
         this.express.use(bodyParser.urlencoded({ extended: false }));
     }
 
-    private connectToDb() {
-        DatabaseConnector.connect(config['db-connection-string'] + '/' + config['db-name']);
-    }
-
     // Configure API endpoints.
     private routes(): void {
-        this.express.use('/api/v1/user', new UserRouter().router);
+        this.express.use('/api', new GuardRouter().router);
+        this.express.use('/authenticate', new AuthRouter().router);
+        this.express.use('/api/user', new UserRouter().router);
     }
 
 }
