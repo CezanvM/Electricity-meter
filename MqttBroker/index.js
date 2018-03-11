@@ -1,41 +1,11 @@
 var mosca       = require('mosca');
-var mongoose    = require('mongoose');
+require('./database-connector/database-connector');
 
-var config = {
-    port: 9999,
-};
+var config = require('./config');
 
 var server = new mosca.Server(config);
 
-mongoose.connect('mongodb://localhost:27017/data').then(() => {
-    console.log('Mongo connected');
-}, (err) => {
-    console.warn(err);
-});
-
-var userModel = mongoose.model('User',new mongoose.Schema({
-    objectId: mongoose.Schema.ObjectId,
-    name: String,
-    password: String,
-    isAdmin: Boolean
-}));
-
-var auth = function (client, username, password, callback) {
-
-    userModel.findOne({
-        name: username,
-        password: password
-    }, (err, user) => {
-        if(err) throw err;
-
-        if(!user)
-            callback(null, false);
-        else
-            callback(null, true);
-    });
-};
-
-server.authenticate = auth;
+server.authenticate = require('./auth/authcontroller').auth;
 
 server.on('error', (err) => {
     console.warn(err);
