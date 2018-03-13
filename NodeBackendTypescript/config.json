@@ -1,6 +1,8 @@
 {
-  "db-connection-string": "mongodb://localhost:27017",
-  "db-name": "data",
+  "db-connection-string": "mongodb://165.227.180.251:27017",
+  "db-name": "electrischeMeter",
   "secret": "mysecrettoken",
-  "mqttBroker":   "mtqq://test.mosquitto.org:1883"
+  "mqttBroker":   "mqtt://localhost:1234/",
+  "mqtt-username": "admin",
+  "mqtt-password": "admin"
 }

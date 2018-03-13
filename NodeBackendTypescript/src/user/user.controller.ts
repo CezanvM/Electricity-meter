@@ -8,7 +8,7 @@ export class UserController {
     }
 
     public get(req: Request, res: Response, next: NextFunction) {
-        const user = new userModel({name: 'cas', password: 'password', isAdmin: false});
+        const user = new userModel({name: 'cas1', password: 'password1', isAdmin: false});
         user.save();
 
         return res.send('saved user with id: ' + req.params.id);

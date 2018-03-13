@@ -1,4 +1,4 @@
 {
-  "dbUrl": "mongodb://localhost:27017",
-  "db": "data"
+  "dbUrl": "mongodb://165.227.180.251:27017",
+  "db": "electrischeMeter"
 }
