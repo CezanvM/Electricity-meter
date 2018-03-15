@@ -1,5 +1,5 @@
 import * as mqtt from 'mqtt';
-import { MeasurementController } from '../measurement/measurement.controller';
+import { measurementController } from '../measurement/measurement.controller';
 import { measurementTopic } from '../measurement/measurement.model';
 const config = require('../../config');
 
@@ -22,7 +22,7 @@ export class  MqttConnector {
             }
             // message is Buffer
             if (topic === measurementTopic) {
-                MeasurementController.handleMeasurement(message);
+                measurementController.handleMeasurement(message);
             }
         });
     }

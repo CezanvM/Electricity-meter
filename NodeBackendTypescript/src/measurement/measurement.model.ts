@@ -1,8 +1,9 @@
 import { Schema, Model, model } from 'mongoose';
 import { MeasurementModelInterface } from './measurement.interface';
+import {IUser} from "../user/user.interface";
 
 export let measurementTopic = 'measurement';
-export let measurementModel: Model<MeasurementModelInterface> = model<MeasurementModelInterface>('Measurement',  new Schema({
+export let measurementSchema = new Schema({
     objectId: Schema.Types.ObjectId,
     sensorId: {
         type: String,
@@ -45,4 +46,19 @@ export let measurementModel: Model<MeasurementModelInterface> = model<Measuremen
         type: String
     },
     gas: Number,
-}));
+    createdAt: Date,
+    modifiedAt: Date
+}).pre('save', function(next) {
+    if (this._doc) {
+        const doc = <IUser>this._doc;
+        const now = new Date();
+        if (!doc.createdAt) {
+            doc.createdAt = now;
+        }
+        doc.modifiedAt = now;
+    }
+    next();
+    return this;
+});
+
+export let measurement: Model<MeasurementModelInterface> = model<MeasurementModelInterface>('Measurement', measurementSchema);

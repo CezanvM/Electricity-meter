@@ -1,11 +1,12 @@
 import * as express from 'express';
 import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
-import { UserRouter } from './user/user.router';
+import { userRouter } from './user/user.router';
 import { DatabaseConnector } from './database/database.connector';
-import { AuthRouter } from './auth/auth.router';
-import { GuardRouter } from './guard/guard.router';
+import { authRouter } from './auth/auth.router';
+import { guardRouter } from './guard/guard.router';
 import { MqttConnector } from './mqtt/mqtt.connector';
+import { measurementRouter } from './measurement/measurement.router';
 
 const config = require('../config');
 // Creates and configures an ExpressJS web server.
@@ -32,9 +33,10 @@ class App {
 
     // Configure API endpoints.
     private routes(): void {
-        this.express.use('/api', new GuardRouter().router);
-        this.express.use('/authenticate', new AuthRouter().router);
-        this.express.use('/api/user', new UserRouter().router);
+        this.express.use('/api',guardRouter.router);
+        this.express.use('/authenticate', authRouter.router);
+        this.express.use('/api/user', userRouter.router);
+        this.express.use('/api/measurement', measurementRouter.router);
     }
 
 }

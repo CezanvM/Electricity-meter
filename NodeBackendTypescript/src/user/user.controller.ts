@@ -1,17 +1,60 @@
-import { userModel } from './user.model';
 import { Request, Response, NextFunction } from 'express';
-import { MqttConnector } from '../mqtt/mqtt.connector';
+import { IUser } from './user.interface';
+import { userRepo } from './user.repository';
 
 export class UserController {
     public getAll (req: Request, res: Response, next: NextFunction) {
-        return res.send('getAll users');
+        userRepo.retrieve((error, users: IUser[]) => {
+            if (error) {
+                return res.status(500).send('internal server error');
+            }
+
+            return res.status(200).json(users);
+        });
     }
 
     public get(req: Request, res: Response, next: NextFunction) {
-        const user = new userModel({name: 'cas1', password: 'password1', isAdmin: false});
-        user.save();
+        userRepo.findById(req.params.id,  (err, user: IUser) => {
+            if (err) {
+                return res.status(500).send(err.toString());
+            }
 
-        return res.send('saved user with id: ' + req.params.id);
+            return res.status(200).json(user);
+        });
+    }
+
+    public post(req: Request, res: Response,  next: NextFunction) {
+        userRepo.create(req.body as IUser, (err, user: IUser) => {
+            if (err) {
+                return res.status(500).json('internal server error');
+            }
+
+            return res.status(200).json(user);
+        });
+    }
+
+    public linkSensor(req: Request, res: Response, next: NextFunction) {
+        userRepo.findOne({
+            name: req.body.name,
+            password: req.body.password
+        }, (err, user: IUser) => {
+            if (err) {
+                return res.status(500).send('internal server error');
+            }
+
+            if (!user) {
+                return res.status(500).send('internal server error');
+            }
+
+            user.sensorId = req.body.sensorId;
+            userRepo.update(user.id, user, (err, user: IUser) => {
+                if (err) {
+                    return res.status(500).send('internal server error');
+                }
+
+                return res.status(200).json(user);
+            });
+        });
     }
 }
 

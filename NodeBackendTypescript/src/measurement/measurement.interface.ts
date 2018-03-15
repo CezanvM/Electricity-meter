@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 
-export interface MeasurementInterface {
+export interface IMeasurement extends Document {
     version: string;
     timestamp: string;
     equipmentId: string;
@@ -22,5 +22,3 @@ export interface MeasurementInterface {
     deviceType: string;
     equipmentId2: string;
 }
-
-export interface MeasurementModelInterface extends MeasurementInterface, Document { }

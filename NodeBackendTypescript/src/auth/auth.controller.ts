@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
-import { userModel } from '../user/user.model';
+import { userRepo } from '../user/user.repository';
 const config = require('../../config');
 
 export class AuthController {
 
     public authenticate(req: Request, res: Response) {
 
-        userModel.findOne({
+        userRepo.findOne({
             name: req.body.name
         }, (err, user) => {
             if (err) throw err;
@@ -62,3 +62,5 @@ export class AuthController {
         }
     }
 }
+
+export let authController: AuthController = new AuthController();
