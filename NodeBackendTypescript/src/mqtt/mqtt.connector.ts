@@ -11,10 +11,15 @@ export class  MqttConnector {
         this.mqttClient.on('connect', () => {
             console.log('mqtt connected');
             this.mqttClient.subscribe('measurement');
-            this.mqttClient.publish('measurement', 'hallo wereld', {qos: 0});
         });
 
         this.mqttClient.on('message', (topic, message) => {
+
+            try  {
+                message = JSON.parse(message);
+            } catch {
+                console.warn('not a valid json');
+            }
             // message is Buffer
             if (topic === measurementTopic) {
                 MeasurementController.handleMeasurement(message);

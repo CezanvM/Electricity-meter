@@ -14,26 +14,21 @@ export let measurementModel: Model<MeasurementModelInterface> = model<Measuremen
         required: true
     },
     equipmentId: {
-        type: Number,
-        required: true
+        type: String
     },
     electricityTo1: {
-        type: Number,
-        required: true
+        type: Number
     },
     electricityTo2: {
-        type: Number,
-        required: true
+        type: Number
     },
     electricityBy1: Number,
     electricityBy2: Number,
     tariffId: {
-        type: Number,
-        required: true
+        type: String
     },
     electricityPowerDelivered: {
-        type: Number,
-        required: true
+        type: Number
     },
     electricityPowerReceived: Number,
     nrOfPowerFailures: Number,
@@ -45,10 +40,9 @@ export let measurementModel: Model<MeasurementModelInterface> = model<Measuremen
     current: Number,
     activePowerPlus: Number,
     activePowerMin: Number,
-    deviceType: Number,
+    deviceType: String,
     equipmentId2: {
-        type: Number,
-        required: true
+        type: String
     },
     gas: Number,
 }));
