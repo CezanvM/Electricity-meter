@@ -1,6 +1,5 @@
 import { Schema, Model, model } from 'mongoose';
-import { MeasurementModelInterface } from './measurement.interface';
-import {IUser} from "../user/user.interface";
+import { IMeasurement } from './measurement.interface';
 
 export let measurementTopic = 'measurement';
 export let measurementSchema = new Schema({
@@ -50,7 +49,7 @@ export let measurementSchema = new Schema({
     modifiedAt: Date
 }).pre('save', function(next) {
     if (this._doc) {
-        const doc = <IUser>this._doc;
+        const doc = <IMeasurement>this._doc;
         const now = new Date();
         if (!doc.createdAt) {
             doc.createdAt = now;
@@ -61,4 +60,4 @@ export let measurementSchema = new Schema({
     return this;
 });
 
-export let measurement: Model<MeasurementModelInterface> = model<MeasurementModelInterface>('Measurement', measurementSchema);
+export let measurement: Model<IMeasurement> = model<IMeasurement>('Measurement', measurementSchema);

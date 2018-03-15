@@ -58,3 +58,5 @@ export class UserController {
     }
 }
 
+export let userController: UserController = new UserController();
+

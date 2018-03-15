@@ -13,7 +13,7 @@ export class UserRouter {
         this.router.get('/', userController.getAll);
         this.router.get('/:id', userController.get);
         this.router.post('/', userController.post);
-        this.router.post('/sensor', userController.linkSensor);
+        this.router.post('/sensor/:id', userController.linkSensor);
     }
 }
 

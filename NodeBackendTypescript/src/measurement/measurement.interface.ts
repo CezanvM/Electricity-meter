@@ -21,4 +21,7 @@ export interface IMeasurement extends Document {
     activePowerMin: string;
     deviceType: string;
     equipmentId2: string;
+    gas: number;
+    createdAt: Date;
+    modifiedAt: Date;
 }

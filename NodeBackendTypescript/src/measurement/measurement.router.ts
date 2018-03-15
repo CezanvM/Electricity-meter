@@ -12,7 +12,7 @@ export class MeasurementRouter {
     init() {
         this.router.get('/', measurementController.getAll);
         this.router.get('/:id', measurementController.get);
-        this.router.post('/sensor/:id', measurementController.getBySensorId);
+        this.router.get('/sensor/:id', measurementController.getBySensorId);
     }
 }
 
