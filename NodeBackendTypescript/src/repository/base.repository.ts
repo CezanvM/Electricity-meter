@@ -15,10 +15,12 @@ export interface IWrite<T> {
 
 export class RepositoryBase<T extends mongoose.Document> implements IRead<T>, IWrite<T> {
 
-    private _model: mongoose.Model<mongoose.Document>;
+    protected _model: mongoose.Model<mongoose.Document>;
+    protected _schema: mongoose.Schema;
 
     constructor(schemaModel: mongoose.Model<mongoose.Document>) {
         this._model = schemaModel;
+        this._schema = schemaModel.schema;
     }
 
     create(item: T, callback: (error: any, result: T) => void) {
@@ -38,7 +40,7 @@ export class RepositoryBase<T extends mongoose.Document> implements IRead<T>, IW
     }
 
     findById(_id: string, callback: (error: any, result: T) => void) {
-        this._model.findById(_id, callback);
+        this._model.findById(this.toObjectId(_id), callback);
     }
 
     findOne(cond?: Object, callback?: (err: any, res: any) => void): mongoose.Query<any> {

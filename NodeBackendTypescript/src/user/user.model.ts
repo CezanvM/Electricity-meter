@@ -1,5 +1,6 @@
 import { Schema, Model, model } from 'mongoose';
 import { IUser } from './user.interface';
+import * as bcrypt from 'bcrypt';
 
 export let userSchema: Schema = new Schema({
     objectId: Schema.Types.ObjectId,
@@ -17,10 +18,27 @@ export let userSchema: Schema = new Schema({
             doc.createdAt = now;
         }
         doc.modifiedAt = now;
+
+
+        if (!this.isModified('password')) { return next(); }
+        bcrypt.genSalt(10, (err, salt) => {
+            if (err) return next(err);
+            bcrypt.hash(doc.password, salt, (err, hash) => {
+                if (err) return next(err);
+                this.password = hash;
+                next();
+                return this;
+            });
+        });
     }
-    next();
-    return this;
+
 });
+
+userSchema.methods.comparePassword = function (candidatePassword: string, cb: (err: any, isMatch: any) => {}) {
+    bcrypt.compare(candidatePassword, this.password, (err, isMatch: boolean) => {
+        cb(err, isMatch);
+    });
+};
 
 export let user: Model<IUser> = model<IUser>('User',  userSchema);
 

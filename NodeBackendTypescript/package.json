@@ -32,7 +32,9 @@
     "typescript": "^2.7.2"
   },
   "dependencies": {
+    "@types/bcrypt": "^1.0.0",
     "@types/mqtt": "^2.5.0",
+    "bcrypt": "^1.0.3",
     "body-parser": "^1.18.2",
     "debug": "^3.1.0",
     "express": "^4.16.2",

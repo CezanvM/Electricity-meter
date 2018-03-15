@@ -17,6 +17,10 @@ export class MeasurementController {
             sensorId: req.params.id
         };
 
+        for (const propName in req.query) {
+            conditions[propName] = req.query[propName];
+        }
+
         measurement.find(conditions, (err, measurements: IMeasurement) => {
             if (err) return res.status(500).send('internal server error');
 
@@ -38,6 +42,20 @@ export class MeasurementController {
 
     public getAll(req: Request, res: Response, next: NextFunction) {
         measurementRepo.retrieve((err, measurements: IMeasurement[]) => {
+            if (err) return res.status(500).send('internal server error');
+
+            if (!measurements) return res.status(404).send('measurements not found');
+
+            return res.status(200).json(measurements);
+        });
+    }
+
+    public filter(req: Request, res: Response, next: NextFunction) {
+        const params = {};
+        for (const propName in req.query) {
+            params[propName] = req.query[propName];
+        }
+        measurement.find(params, (err, measurements: IMeasurement[]) => {
             if (err) return res.status(500).send('internal server error');
 
             if (!measurements) return res.status(404).send('measurements not found');
