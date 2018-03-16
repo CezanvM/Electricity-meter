@@ -4,6 +4,5 @@
   "secret": "mysecrettoken",
   "mqttBroker":   "mqtt://165.227.180.251:1234/",
   "mqtt-username": "admin",
-  "mqtt-password": "admin",
-  "encryptionPass": "IkWilKaas1230r31312"
+  "mqtt-password": "admin"
 }
