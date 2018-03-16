@@ -26,7 +26,7 @@ export class LoginComponent implements OnInit {
   onLoginClick() {
     if (this.loginForm.valid) {
       this.authService.login(this.user.username, this.user.password).subscribe(e => {
-        /// navigate to home page
+        console.log("logged in");
       });
     }
   }
