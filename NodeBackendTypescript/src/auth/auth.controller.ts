@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
 import { userRepo } from '../user/user.repository';
+import moment = require("moment");
 const config = require('../../config');
 
 export class AuthController {
@@ -24,15 +25,14 @@ export class AuthController {
                         };
 
                         const token = jwt.sign(payload, config.secret, {
-                            expiresIn: '24h'
+                            expiresIn: '7d'
                         });
 
                         console.log('time for response');
                         // return the information including token as JSON
-                        res.json({
-                            success: true,
-                            message: 'Enjoy your token!',
-                            token
+                        res.status(200).json({
+                            id_token: token,
+                            expires_at: moment().add(7, 'days')
                         });
                     } else {
                         return res.json({ success: false, message: 'failed to authenticate user' });

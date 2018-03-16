@@ -6,11 +6,11 @@ import { measurement } from './measurement.model';
 export class MeasurementController {
 
     public handleMeasurement(measurement) {
-        measurementRepo.create(measurement, (err, measurement: IMeasurement) => {
-            if (err) {
-                console.warn(err.toString());
-            }
-        });
+        // measurementRepo.create(measurement, (err, measurement: IMeasurement) => {
+        //     if (err) {
+        //         console.warn(err.toString());
+        //     }
+        // });
     }
 
     public getBySensorId(req: Request, res: Response, next: NextFunction) {
