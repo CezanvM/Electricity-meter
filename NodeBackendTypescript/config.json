@@ -2,7 +2,7 @@
   "db-connection-string": "mongodb://165.227.180.251:27017",
   "db-name": "electrischeMeter",
   "secret": "mysecrettoken",
-  "mqttBroker":   "mqtt://localhost:1234/",
+  "mqttBroker":   "mqtt://165.227.180.251:1234/",
   "mqtt-username": "admin",
   "mqtt-password": "admin"
 }

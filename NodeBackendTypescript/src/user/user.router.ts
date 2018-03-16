@@ -1,18 +1,20 @@
 import { Router } from 'express';
-import { UserController } from './user.controller';
+import { userController } from './user.controller';
 
 export class UserRouter {
     router: Router;
-    controller: UserController;
 
     constructor() {
         this.router = Router();
-        this.controller = new UserController();
         this.init();
     }
 
     init() {
-        this.router.get('/', this.controller.getAll);
-        this.router.get('/:id', this.controller.get);
+        this.router.get('/', userController.getAll);
+        this.router.get('/:id', userController.get);
+        this.router.post('/', userController.post);
+        this.router.post('/sensor/:id', userController.linkSensor);
     }
 }
+
+export let userRouter: UserRouter = new UserRouter();

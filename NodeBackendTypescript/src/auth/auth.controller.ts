@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 import * as jwt from 'jsonwebtoken';
-import { userModel } from '../user/user.model';
+import { userRepo } from '../user/user.repository';
 const config = require('../../config');
 
 export class AuthController {
 
     public authenticate(req: Request, res: Response) {
 
-        userModel.findOne({
+        userRepo.findOne({
             name: req.body.name
         }, (err, user) => {
             if (err) throw err;
@@ -15,25 +15,29 @@ export class AuthController {
             if (!user) {
                 res.json({ success: false, message: 'Authentication failed. User not found.' });
             } else if (user) {
-                if (user.password !== req.body.password) {
-                    res.json({ success: false, message: 'Authentication failed. Wrong password.' });
-                } else {
-                    const payload = {
-                        admin: user.admin
-                    };
 
-                    const token = jwt.sign(payload, config.secret, {
-                        expiresIn: '24h'
-                    });
+                userRepo.comparePassword(req.body.password, user.password, (err, isMatch: boolean) => {
+                    if (err) { return res.json({ success: false, message: 'internal server error.' }); }
+                    if (isMatch) {
+                        const payload = {
+                            admin: user.admin
+                        };
 
-                    console.log('time for response');
-                    // return the information including token as JSON
-                    res.json({
-                        success: true,
-                        message: 'Enjoy your token!',
-                        token
-                    });
-                }
+                        const token = jwt.sign(payload, config.secret, {
+                            expiresIn: '24h'
+                        });
+
+                        console.log('time for response');
+                        // return the information including token as JSON
+                        res.json({
+                            success: true,
+                            message: 'Enjoy your token!',
+                            token
+                        });
+                    } else {
+                        return res.json({ success: false, message: 'failed to authenticate user' });
+                    }
+                });
             }
         });
     }
@@ -62,3 +66,5 @@ export class AuthController {
         }
     }
 }
+
+export let authController: AuthController = new AuthController();

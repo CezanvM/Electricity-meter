@@ -1,8 +1,8 @@
 import { Schema, Model, model } from 'mongoose';
-import { MeasurementModelInterface } from './measurement.interface';
+import { IMeasurement } from './measurement.interface';
 
 export let measurementTopic = 'measurement';
-export let measurementModel: Model<MeasurementModelInterface> = model<MeasurementModelInterface>('Measurement',  new Schema({
+export let measurementSchema = new Schema({
     objectId: Schema.Types.ObjectId,
     sensorId: {
         type: String,
@@ -14,26 +14,21 @@ export let measurementModel: Model<MeasurementModelInterface> = model<Measuremen
         required: true
     },
     equipmentId: {
-        type: Number,
-        required: true
+        type: String
     },
     electricityTo1: {
-        type: Number,
-        required: true
+        type: Number
     },
     electricityTo2: {
-        type: Number,
-        required: true
+        type: Number
     },
     electricityBy1: Number,
     electricityBy2: Number,
     tariffId: {
-        type: Number,
-        required: true
+        type: String
     },
     electricityPowerDelivered: {
-        type: Number,
-        required: true
+        type: Number
     },
     electricityPowerReceived: Number,
     nrOfPowerFailures: Number,
@@ -45,10 +40,24 @@ export let measurementModel: Model<MeasurementModelInterface> = model<Measuremen
     current: Number,
     activePowerPlus: Number,
     activePowerMin: Number,
-    deviceType: Number,
+    deviceType: String,
     equipmentId2: {
-        type: Number,
-        required: true
+        type: String
     },
     gas: Number,
-}));
+    createdAt: Date,
+    modifiedAt: Date
+}).pre('save', function(next) {
+    if (this._doc) {
+        const doc = <IMeasurement>this._doc;
+        const now = new Date();
+        if (!doc.createdAt) {
+            doc.createdAt = now;
+        }
+        doc.modifiedAt = now;
+    }
+    next();
+    return this;
+});
+
+export let measurement: Model<IMeasurement> = model<IMeasurement>('Measurement', measurementSchema);

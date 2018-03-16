@@ -1,29 +1,27 @@
 import { Document } from 'mongoose';
 
-export interface MeasurementInterface {
-    sensorId: string;
-    version: number;
-    date: Date;
-    equipmentId: number;
-    electricityTo1: number;
-    electricityTo2: number;
-    electricityBy1: number;
-    electricityBy2: number;
-    tariffId: number;
-    electricityPowerDelivered: number;
-    electricityPowerReceived: number;
-    nrOfPowerFailures: number;
-    powerFailures: object;
-    nrOfVoltageSags: number;
-    nrOfVoltageSwells: number;
+export interface IMeasurement extends Document {
+    version: string;
+    timestamp: string;
+    equipmentId: string;
+    electricityTo1: string;
+    electricityTo2: string;
+    electricityBy1: string;
+    electricityBy2: string;
+    tariffId: string;
+    electricityPowerDeliverd: string;
+    electricityPowerReceived: string;
+    nrOfPowerFailures: string;
+    nrOfVoltageSags: string;
+    nrOfVoltageSwells: string;
     textMessage1: string;
     textMessage2: string;
-    current: number;
-    activePowerPlus: number;
-    activePowerMin: number;
-    deviceType: number;
-    equipmentId2: number;
+    current: string;
+    activePowerPlus: string;
+    activePowerMin: string;
+    deviceType: string;
+    equipmentId2: string;
     gas: number;
+    createdAt: Date;
+    modifiedAt: Date;
 }
-
-export interface MeasurementModelInterface extends MeasurementInterface, Document { }

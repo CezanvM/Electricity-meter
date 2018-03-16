@@ -1,11 +1,10 @@
 import { Document } from 'mongoose';
 
-export interface UserInterface {
+export interface IUser extends Document {
     name: String;
     password: String;
     admin: Boolean;
-}
-
-export interface UserModelInteface extends UserInterface, Document {
-    fullName(): string;
+    sensorId: string;
+    createdAt: Date;
+    modifiedAt: Date;
 }
