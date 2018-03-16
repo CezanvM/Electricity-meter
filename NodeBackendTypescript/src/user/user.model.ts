@@ -34,11 +34,5 @@ export let userSchema: Schema = new Schema({
 
 });
 
-userSchema.methods.comparePassword = function (candidatePassword: string, cb: (err: any, isMatch: any) => {}) {
-    bcrypt.compare(candidatePassword, this.password, (err, isMatch: boolean) => {
-        cb(err, isMatch);
-    });
-};
-
 export let user: Model<IUser> = model<IUser>('User',  userSchema);
 

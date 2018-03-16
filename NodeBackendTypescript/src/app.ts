@@ -1,6 +1,7 @@
 import * as express from 'express';
 import * as logger from 'morgan';
 import * as bodyParser from 'body-parser';
+import * as mongoose from 'mongoose';
 import { userRouter } from './user/user.router';
 import { DatabaseConnector } from './database/database.connector';
 import { authRouter } from './auth/auth.router';
@@ -17,6 +18,7 @@ class App {
 
     // Run configuration methods on the Express instance.
     constructor() {
+        mongoose.set('debug', true);
         this.express = express();
         this.middleware();
         this.routes();

@@ -16,7 +16,7 @@ export class AuthController {
                 res.json({ success: false, message: 'Authentication failed. User not found.' });
             } else if (user) {
 
-                user.comparePassword(req.body.password, (err, isMatch: boolean) => {
+                userRepo.comparePassword(req.body.password, user.password, (err, isMatch: boolean) => {
                     if (err) { return res.json({ success: false, message: 'internal server error.' }); }
                     if (isMatch) {
                         const payload = {

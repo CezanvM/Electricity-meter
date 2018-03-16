@@ -1,5 +1,5 @@
 import { IMeasurement } from './measurement.interface';
-import { measurementRepo } from './measurement.repository';
+import { measurementRepo, MeasurementRepository } from './measurement.repository';
 import { NextFunction, Request, Response } from 'express';
 import { measurement } from './measurement.model';
 
@@ -13,15 +13,9 @@ export class MeasurementController {
     }
 
     public getBySensorId(req: Request, res: Response, next: NextFunction) {
-        const conditions = {
-            sensorId: req.params.id
-        };
+        req.query.sensorId = req.params.id;
 
-        for (const propName in req.query) {
-            conditions[propName] = req.query[propName];
-        }
-
-        measurement.find(conditions, (err, measurements: IMeasurement) => {
+        measurement.find(req.query, (err, measurements: IMeasurement) => {
             if (err) return res.status(500).send('internal server error');
 
             if (!measurements) return res.status(404).send('measurements not found');
@@ -31,7 +25,7 @@ export class MeasurementController {
     }
 
     public get(req: Request, res: Response, next: NextFunction) {
-        measurementRepo.findById(req.params.id, (err, measurement: IMeasurement) => {
+        new MeasurementRepository().findById(req.params.id, (err, measurement: IMeasurement) => {
             if (err) return res.status(500).send('internal server error');
 
             if (!measurement) return res.status(404).send('measurement not found');
@@ -51,11 +45,21 @@ export class MeasurementController {
     }
 
     public filter(req: Request, res: Response, next: NextFunction) {
-        const params = {};
-        for (const propName in req.query) {
-            params[propName] = req.query[propName];
-        }
-        measurement.find(params, (err, measurements: IMeasurement[]) => {
+        measurementRepo.find(req.query, (err, measurements: IMeasurement[]) => {
+            if (err) return res.status(500).send('internal server error');
+
+            if (!measurements) return res.status(404).send('measurements not found');
+
+            return res.status(200).json(measurements);
+        });
+    }
+
+    public betweenDates(req: Request, res: Response, next: NextFunction) {
+        const beginDate: Date = new Date(req.query.beginDate);
+        const endDate: Date = new Date(req.query.endDate);
+        delete req.query.beginDate;
+        delete req.query.endDate;
+        measurementRepo.findBetweenDates('timestamp', beginDate , endDate, req.query, (err, measurements: IMeasurement[]) => {
             if (err) return res.status(500).send('internal server error');
 
             if (!measurements) return res.status(404).send('measurements not found');
