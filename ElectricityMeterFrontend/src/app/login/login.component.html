@@ -1,0 +1,12 @@
+<div class="d-flex flex-row h-100 bg-light align-items-center justify-content-center">
+  <div class="card w-50 h-50" style="color: floralwhite !important;">
+    <img class="card-img-top w-50 h-50 align-self-center" src="../../assets/Logo2.png">
+    <div class="card-body">
+        <form class="d-flex flex-column align-items-center justify-content-center" [formGroup]="loginForm">
+          <input class="p-2 m-2 w-50" formControlName="username" [(ngModel)]="user.username" type="text" placeholder="Username">
+          <input class="p-2 m-2 w-50" formControlName="password" [(ngModel)]="user.password" type="text" placeholder="Password">
+          <button class="btn btn-primary p-2 m-2 w-50" (click)="onLoginClick()"  [disabled]="!loginForm.valid"> Login </button>
+        </form>
+    </div>
+  </div>
+</div>
