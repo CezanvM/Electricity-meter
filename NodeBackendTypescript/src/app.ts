@@ -35,7 +35,7 @@ class App {
 
     // Configure API endpoints.
     private routes(): void {
-        this.express.use('/api',guardRouter.router);
+        this.express.use('/api', guardRouter.router);
         this.express.use('/authenticate', authRouter.router);
         this.express.use('/api/user', userRouter.router);
         this.express.use('/api/measurement', measurementRouter.router);

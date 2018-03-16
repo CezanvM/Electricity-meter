@@ -11,9 +11,9 @@ export class UserRouter {
 
     init() {
         this.router.get('/', userController.getAll);
-        this.router.get('/:id', userController.get);
         this.router.post('/', userController.post);
-        this.router.post('/sensor/:id', userController.linkSensor);
+        this.router.post('/sensor/', userController.linkSensor);
+        this.router.get('/:id', userController.get);
     }
 }
 
