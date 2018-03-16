@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^1.0.3",
     "mongoose": "^5.0.9",
     "mosca": "^2.7.0"
   }
