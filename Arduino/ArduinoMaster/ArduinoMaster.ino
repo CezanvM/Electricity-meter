@@ -2,6 +2,7 @@
 #include <PubSubClient.h>
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
+#include <ESP8266HTTPClient.h>
 #include <ESP8266WebServer.h>
 #include "./DNSServer.h"
 
@@ -29,7 +30,7 @@ String Datagram[20][3] = {
   //gas or water
 };
 
-int redPin = 14; 
+int redPin = 14;
 int greenPin = 12;
 int bluePin = 13;
 
@@ -39,7 +40,8 @@ ESP8266WebServer server(80);
 DNSServer dnsServer;
 IPAddress IP(10, 10, 10, 1);
 boolean wifiConnected = false;
-              
+boolean isSensorSetup = false;
+
 //LA134-2016
 //MAD2016TI
 String ssid     = "";
@@ -57,20 +59,26 @@ PubSubClient mqttClient("", 0, wifiClient);
 
 const char *host = "165.227.180.251";
 uint16_t port = 1234;
+//const char *topic = "Onzinmeasurement";
 const char *topic = "measurement";
 String html = "<h1>werkt lekker kenker</h1>";
 String html2 = "<!DOCTYPE html>\n<html>\n<body>\n<h2> WIFI</h2>\nssid: <input type=\"text\" id=\"ssid\" value=\"\"><br>\npassword: <input type=\"text\" id=\"password\" value=\"\">\n<h2>LOGIN</h2>\nusername <input type=\"text\" id=\"username\" value=\"\"><br>\npassword <input type=\"text\" id=\"loginPassword\" value=\"\">\n<p><button onclick=\"login()\">Login</button></p>\n<script>\n\u0009var ssid; \n\u0009var password; \n\u0009var username; \n\u0009var loginPassword;\n\u0009var url = \"\"; \n\u0009\n\u0009function login()\n\u0009{\n\u0009url = \"\";\n\u0009ssid = document.getElementById('ssid').value;\n\u0009password = document.getElementById('password').value;\n\u0009username = document.getElementById('username').value;\n\u0009loginPassword = document.getElementById('loginPassword').value;\n\u0009\n\u0009insertParam(\"ssid\",ssid);\n\u0009insertParam(\"password\",password);\n\u0009insertParam(\"username\",username);\n\u0009insertParam(\"loginPassword\",loginPassword);\n\u0009\n\u0009document.location.search = url;\n\u0009}\n\u0009function insertParam(key, value)\n\u0009{\n\n    key = encodeURI(key); value = encodeURI(value);\n\n    var kvp = document.location.search.substr(1).split('&');\n\u0009console.log(kvp);\n    var i=kvp.length; var x; while(i--) \n    {\n        x = kvp[i].split('=');\n\n        if (x[0]==key)\n        {\n            x[1] = value;\n            kvp[i] = x.join('=');\n            break;\n        }\n    }\n\n    if(i<0) {kvp[kvp.length] = [key,value].join('=');}\n\u0009\n    //this will reload the page, it's likely better to store this until finished\n\u0009url = url + kvp.join('&');\n\u0009console.log(url);\n}\n</script>\n</body>\n</html>";
 
-void setup() {   
+void setup() {
 
-pinMode(redPin, OUTPUT);
-pinMode(greenPin, OUTPUT);
-pinMode(bluePin, OUTPUT);
-  
+
   delay(1000);
   Serial.begin(115200);
+  ledSetup();
   ApSetUp();
 
+}
+
+void ledSetup()
+{
+  pinMode(redPin, OUTPUT);
+  pinMode(greenPin, OUTPUT);
+  pinMode(bluePin, OUTPUT);
 }
 
 void connectionSetUp()
@@ -79,57 +87,78 @@ void connectionSetUp()
   WiFi.mode(WIFI_STA);
   delay(1000);
   int connectionIndex = 0;
- // Serial.println(ssid.c_str());
- // Serial.println(password.c_str());
- // const char* tempSsid = ssid.c_str();
- // const char* tempPass = password.c_str();
   WiFi.begin(ssid.c_str(), password.c_str());
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.println("connecting");
     wifiConnected = true;
-    if(connectionIndex > 20)
+    //setup sensor with post call
+    if (connectionIndex > 20)
     {
-      //show errorLED;
       Serial.println("Connection timed out");
-       setColor(255,1,1);
-      wifiConnected = false; 
-      break; 
+      setColor(255, 1, 1);
+      wifiConnected = false;
+      break;
     }
     connectionIndex++;
   }
 }
+
+void linkSensor()
+{
+  JsonObject& sensorJson = jsonBuffer.createObject();
+  sensorJson["name"] = username;
+  sensorJson["password"] = loginPassword;
+  sensorJson["sensorId"] = WiFi.macAddress();
+  
+   HTTPClient http; 
+   http.begin("server ip port and route here"); //http://local:124/linksensor
+   http.addHeader("Content-Type", "text/plain");
+
+   int responseCode = http.POST("message");
+   String response = http.getString();
+
+  Serial.println(responseCode);
+  Serial.println(response);
+
+  http.end();
+}
+
 void ApSetUp()
 {
-  setColor(255, 165,1);
+  setColor(255, 95, 1);
   WiFi.mode(WIFI_AP);
   delay(1000);
   Serial.println();
   Serial.print("Configuring access point...");
   WiFi.softAPConfig(IP, IP, IPAddress(255, 255, 255, 0));
   WiFi.softAP(APssid, APpassword);
-
   //dnsServer.start(53, "*", IP);
-  Serial.print("AP IP address: ");
-   //server.on("/", handleLogin);
+  //server.on("/", handleLogin);
   server.onNotFound([]() {
     server.send(200, "text/html", html2);
   });
   server.begin();
   Serial.println("HTTP server started");
-
-  //connectionSetUp();
 }
 
 void loop() {
-  if (wifiConnected)
-  {
-    ConnectedLoop();
-  }
-  else
-  {
-    APLoop();
-  }
+//  if (isSensorSetup)
+//  {
+//    ConnectedLoop();
+//  }
+//  else
+//  {
+
+    if (wifiConnected)
+    {
+      ConnectedLoop();
+    }
+    else
+    {
+      APLoop();
+    }
+  //}
 }
 
 void APLoop()
@@ -153,6 +182,7 @@ void APLoop()
           Serial.println(password);
           Serial.println(username);
           Serial.println(loginPassword);
+
           server.send(200, "text/html", html);
           closeAP();
           connectionSetUp();
@@ -163,13 +193,7 @@ void APLoop()
   }
 }
 
-void closeAP()
-{
-  server.stop();
-//  delete *server;
-  WiFi.softAPdisconnect();
-  delay(2000);
-}
+
 
 void ConnectedLoop()
 {
@@ -191,20 +215,45 @@ void ConnectedLoop()
         if (c == '!')
         {
           Serial.println("end data received");
-          //Serial.print(Data);
+          Serial.print(Data);
+          jsonBuffer.clear();
           JsonObject& object = dataToLinesStr(Data);
           char json[object.measureLength()];
           object.printTo((char*)json, object.measureLength() + 1);
           //          const char * json_ptr = json;
           Serial.println(json);
-          //          Serial.println(sizeof(json));
-          //                                    int error = mqttClient.publish(topic, json);
-          //   Serial.println(error);
+             int error = mqttClient.publish(topic, json);
+             Serial.println(error);
+             if(sizeof(json) > 500)  
+             {
+              setColor(10,10,10);
+              delay(100);
+              setColor(0,0,0);
+             }
+             else
+             {
+              resetLoop();
+             }
         }
         Data.concat(c);
       }
     }
   }
+}
+
+void resetLoop()
+{
+  Serial.println("reset nessecery");
+  jsonBuffer.clear();
+  delay(2000);
+}
+
+
+void closeAP()
+{
+  server.stop();
+  WiFi.softAPdisconnect();
+  delay(2000);
 }
 
 void setColor(int r, int g, int b)
@@ -216,18 +265,17 @@ void setColor(int r, int g, int b)
 
 void mqttConnect() {
 
-  // Connect to mqtt broker and set callback
   mqttClient.setClient(wifiClient);
   mqttClient.setServer(host, port);
-  
-if (mqttClient.connect("esp8266", username.c_str(), loginPassword.c_str())) {
-  //if (mqttClient.connect("esp8266", "cas", "password")) {
+
+  if (mqttClient.connect("esp8266", username.c_str(), loginPassword.c_str())) {
     Serial.printf("%s: MQTT connected to %s:%d\n", __FUNCTION__, host, port);
-     setColor(1, 255,1);
+    setColor(1, 255, 1);
+    delay(2000); 
+    setColor(0,0,0);
   } else {
     Serial.printf("%s: MQTT connection ERROR (%s:%d)\n", __FUNCTION__, host, port);
-    // WiFi.softAPdisconnect(true);
-    setColor(255, 1,1);
+    setColor(255, 1, 1);
   }
 }
 
@@ -235,7 +283,6 @@ JsonObject& dataToLinesStr(String data)
 {
   int lineIndex = 0;
   int from = 0;
-  //int to = 0;
   String lines[100];
   for (int i = 0; i < data.length(); i++)
   {
@@ -252,20 +299,16 @@ JsonObject& dataToLinesStr(String data)
 JsonObject& parseLinesStr(String lines[], int ArraySize)
 {
   JsonObject& measurement = jsonBuffer.createObject();
-  //  measurement["sensorId"] = WiFi.macAddress();
-  measurement["sensorId"] = "4B:4C:12:7A:21:ED";
+  measurement["sensorId"] = WiFi.macAddress();
   for (int i = 2; i < ArraySize; i++)
   {
-    //Serial.print(lines[i]);
     findKey(lines[i], measurement);
   }
-
   return measurement;
 }
 
 void findKey(String line, JsonObject& measurement)
 {
-  // Serial.println(line);
   int index = 0;
   String  key = "";
   String rawValue = "";
@@ -276,29 +319,18 @@ void findKey(String line, JsonObject& measurement)
     key = line.substring(0, index + 1);
     rawValue = line.substring(index, line.length() - 1);
     index++;
-
   }
 
   for (int i = 0; i < 20; i++)
   {
     if (key.indexOf(Datagram[i][0] ) > 0)
     {
-      //  Serial.print("found key with name:");
-      //Serial.print(Datagram[i][1]);
-      //Serial.print( " with value = ");
       measurement[Datagram[i][1]] = findValue(rawValue, Datagram[i][2]);
     }
     else if (key.indexOf(timeStampKey) > 0)
     {
-      //Serial.print(timeStampKey);
-      //Serial.print(" Found Timestamp with value = ");
-      //measurement["root"] = "hallo";
       measurement["timestamp"] = findTimeStamp(rawValue);
       break;
-    }
-    else
-    {
-
     }
   }
 }
