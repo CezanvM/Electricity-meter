@@ -19,10 +19,9 @@ export class AuthService implements  OnDestroy {
 
   login(username: string, password: string ) {
     return this.http.post<any>('authenticate', {name: username, password: password})
-      .shareReplay()
       .takeUntil(this.stop$)
-      .filter(e => e.id_token !== null && e.expires_at !== null)
-      .do(e => this.setSession);
+      .do(e => this.setSession(e))
+      .shareReplay();
   }
 
   ngOnDestroy(): void {
@@ -32,9 +31,10 @@ export class AuthService implements  OnDestroy {
   }
 
   private setSession(authResult) {
-
-    localStorage.setItem('id_token', authResult.id_token);
-    localStorage.setItem('expires_at', JSON.stringify(authResult.expires_at) );
+    if (authResult.id_token && authResult.expires_at) {
+      localStorage.setItem('id_token', authResult.id_token);
+      localStorage.setItem('expires_at', JSON.stringify(authResult.expires_at) );
+    }
   }
 
   logout() {

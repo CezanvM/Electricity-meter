@@ -1,1 +1,5 @@
 <app-login></app-login>
+
+<div class="h-100 w-100" *ngIf=login.isLoggedIn>
+  <router-outlet></router-outlet>
+</div>

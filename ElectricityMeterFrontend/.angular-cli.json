@@ -20,12 +20,15 @@
       "prefix": "app",
       "styles": [
         "styles.scss",
-        "../node_modules/font-awesome/scss/font-awesome.scss"
+        "../node_modules/font-awesome/scss/font-awesome.scss",
+        "../node_modules/sweetalert2/dist/sweetalert2.css"
       ],
       "addons": [
         "../node_modules/font-awesome/fonts/*.+(otf|eot|svg|ttf|woff|woff2)"
       ],
-      "scripts": [],
+      "scripts": [
+        "../node_modules/sweetalert2/dist/sweetalert2.js"
+      ],
       "environmentSource": "environments/environment.ts",
       "environments": {
         "dev": "environments/environment.ts",

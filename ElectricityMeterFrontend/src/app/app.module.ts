@@ -1,11 +1,13 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { LoginModule} from './login/login.module';
-import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import { HttpClientModule} from '@angular/common/http';
+import {InterceptorsModule} from './interceptors/interceptors.module';
+import { SweetAlertService } from 'ngx-sweetalert2';
 import { AppComponent } from './app.component';
-import {BaseurlInterceptor} from './interceptors/baseurl.interceptor';
-import {AuthInterceptor} from './interceptors/auth.interceptor';
-
+import {AppRoutingModule} from './app.routing.module';
+import {DashboardModule} from './Dashboard/dashboard.module';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -14,17 +16,13 @@ import {AuthInterceptor} from './interceptors/auth.interceptor';
   imports: [
     BrowserModule,
     LoginModule,
-    HttpClientModule
+    HttpClientModule,
+    InterceptorsModule,
+    AppRoutingModule,
+    DashboardModule,
+    BrowserAnimationsModule
   ],
-  providers: [{
-    provide: HTTP_INTERCEPTORS,
-    useClass: BaseurlInterceptor,
-    multi: true,
-  }, {
-    provide: HTTP_INTERCEPTORS,
-    useClass: AuthInterceptor,
-    multi: true,
-  }],
+  providers: [ SweetAlertService ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
