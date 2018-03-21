@@ -11,6 +11,7 @@ export class AuthRouter {
 
     init() {
         this.router.post('/', authController.authenticate);
+        this.router.post('/sensor/', authController.linkSensor);
     }
 }
 
