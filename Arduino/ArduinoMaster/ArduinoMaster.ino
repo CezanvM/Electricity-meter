@@ -41,6 +41,7 @@ DNSServer dnsServer;
 IPAddress IP(10, 10, 10, 1);
 boolean wifiConnected = false;
 boolean isSensorSetup = false;
+int debugIndex = 0;
 
 //LA134-2016
 //MAD2016TI
@@ -110,13 +111,17 @@ void linkSensor()
   sensorJson["name"] = username;
   sensorJson["password"] = loginPassword;
   sensorJson["sensorId"] = WiFi.macAddress();
-  
-   HTTPClient http; 
-   http.begin("server ip port and route here"); //http://local:124/linksensor
-   http.addHeader("Content-Type", "text/plain");
 
-   int responseCode = http.POST("message");
-   String response = http.getString();
+  char json[sensorJson.measureLength()];
+  sensorJson.printTo((char*)json, sensorJson.measureLength() + 1);
+  Serial.println(json);
+
+  HTTPClient http;
+  http.begin("168.227.180.251:3000/authenticate/sensor"); //168.227.180.251:3000/authenticate/sensor
+  http.addHeader("Content-Type", "application/json");
+
+  int responseCode = http.POST(json);
+  String response = http.getString();
 
   Serial.println(responseCode);
   Serial.println(response);
@@ -143,22 +148,41 @@ void ApSetUp()
 }
 
 void loop() {
-//  if (isSensorSetup)
-//  {
-//    ConnectedLoop();
-//  }
-//  else
-//  {
+  //  if (isSensorSetup)
+  //  {
+  //    ConnectedLoop();
+  //  }
+  //  else
+  //  {
 
-    if (wifiConnected)
+  if (wifiConnected)
+  {
+    //linksensor();
+    ConnectedLoop();
+    if (debugIndex > 1000)
     {
-      ConnectedLoop();
+      setColor(125, 75, 10);
+      delay(100);
+      setColor(0, 0, 0);
+      debugIndex = 0;
     }
-    else
+
+    debugIndex++;  if (debugIndex > 1000)
     {
-      APLoop();
+      setColor(125, 75, 10);
+      delay(100);
+      setColor(0, 0, 0);
+      debugIndex = 0;
     }
+
+    debugIndex++;
+  }
+  else
+  {
+    APLoop();
+  }
   //}
+
 }
 
 void APLoop()
@@ -220,20 +244,19 @@ void ConnectedLoop()
           JsonObject& object = dataToLinesStr(Data);
           char json[object.measureLength()];
           object.printTo((char*)json, object.measureLength() + 1);
-          //          const char * json_ptr = json;
           Serial.println(json);
-             int error = mqttClient.publish(topic, json);
-             Serial.println(error);
-             if(sizeof(json) > 500)  
-             {
-              setColor(10,10,10);
-              delay(100);
-              setColor(0,0,0);
-             }
-             else
-             {
-              resetLoop();
-             }
+          int error = mqttClient.publish(topic, json);
+          Serial.println(error);
+          if (sizeof(json) > 500)
+          {
+            setColor(10, 10, 10);
+            delay(100);
+            setColor(0, 0, 0);
+          }
+          else
+          {
+            resetLoop();
+          }
         }
         Data.concat(c);
       }
@@ -271,11 +294,13 @@ void mqttConnect() {
   if (mqttClient.connect("esp8266", username.c_str(), loginPassword.c_str())) {
     Serial.printf("%s: MQTT connected to %s:%d\n", __FUNCTION__, host, port);
     setColor(1, 255, 1);
-    delay(2000); 
-    setColor(0,0,0);
+    delay(2000);
+    setColor(0, 0, 0);
   } else {
     Serial.printf("%s: MQTT connection ERROR (%s:%d)\n", __FUNCTION__, host, port);
     setColor(255, 1, 1);
+    delay(250);
+    setColor(0, 0, 0);
   }
 }
 
