@@ -17,7 +17,7 @@ String Datagram[20][3] = {
   {"1-0:1.7.0", "electricityPowerDeliverd", "*kW"},
   {"1-0:2.7.0", "electricityPowerReceived", "*kW"},
   {"0-0:96.7.21", "nrOfPowerFailures", ""},
-  //power failures
+  //power failures    value: Serial.println("1-0:99.97.0(5)(0-0:96.7.19)(170727123833S)(0000001124*s)(170727112647S)(0000000323*s)(170726164024S)(0000002427*s)(170726100547S)(0000000628*s)(000101000001W)(2147483647*s)");
   {"1-0:32.32.0", "nrOfVoltageSags", ""},
   {"1-0:32.36.0", "nrOfVoltageSwells", ""},
   {"0-0:96.13.1", "textMessage1", ""},
@@ -27,7 +27,7 @@ String Datagram[20][3] = {
   {"1-0:22.7.0", "activePowerMin", "*kW"},
   {"0-1:24.1.0", "deviceType", ""},
   {"0-1:96.1.0", "equipmentId2", ""}
-  //gas or water
+  //gas or water  value: 0-1:24.2.1(180309210000W)(03118.623*m3)
 };
 
 int redPin = 14;
@@ -60,14 +60,12 @@ PubSubClient mqttClient("", 0, wifiClient);
 
 const char *host = "165.227.180.251";
 uint16_t port = 1234;
-//const char *topic = "Onzinmeasurement";
+const char *debugTopic = "debugSensor";
 const char *topic = "measurement";
-String html = "<h1>werkt lekker kenker</h1>";
+String html = "<h1>werkt lekker kinker</h1>";
 String html2 = "<!DOCTYPE html>\n<html>\n<body>\n<h2> WIFI</h2>\nssid: <input type=\"text\" id=\"ssid\" value=\"\"><br>\npassword: <input type=\"text\" id=\"password\" value=\"\">\n<h2>LOGIN</h2>\nusername <input type=\"text\" id=\"username\" value=\"\"><br>\npassword <input type=\"text\" id=\"loginPassword\" value=\"\">\n<p><button onclick=\"login()\">Login</button></p>\n<script>\n\u0009var ssid; \n\u0009var password; \n\u0009var username; \n\u0009var loginPassword;\n\u0009var url = \"\"; \n\u0009\n\u0009function login()\n\u0009{\n\u0009url = \"\";\n\u0009ssid = document.getElementById('ssid').value;\n\u0009password = document.getElementById('password').value;\n\u0009username = document.getElementById('username').value;\n\u0009loginPassword = document.getElementById('loginPassword').value;\n\u0009\n\u0009insertParam(\"ssid\",ssid);\n\u0009insertParam(\"password\",password);\n\u0009insertParam(\"username\",username);\n\u0009insertParam(\"loginPassword\",loginPassword);\n\u0009\n\u0009document.location.search = url;\n\u0009}\n\u0009function insertParam(key, value)\n\u0009{\n\n    key = encodeURI(key); value = encodeURI(value);\n\n    var kvp = document.location.search.substr(1).split('&');\n\u0009console.log(kvp);\n    var i=kvp.length; var x; while(i--) \n    {\n        x = kvp[i].split('=');\n\n        if (x[0]==key)\n        {\n            x[1] = value;\n            kvp[i] = x.join('=');\n            break;\n        }\n    }\n\n    if(i<0) {kvp[kvp.length] = [key,value].join('=');}\n\u0009\n    //this will reload the page, it's likely better to store this until finished\n\u0009url = url + kvp.join('&');\n\u0009console.log(url);\n}\n</script>\n</body>\n</html>";
 
 void setup() {
-
-
   delay(1000);
   Serial.begin(115200);
   ledSetup();
@@ -159,22 +157,14 @@ void loop() {
   {
     //linksensor();
     ConnectedLoop();
-    if (debugIndex > 1000)
+    if (debugIndex > 500000)
     {
-      setColor(125, 75, 10);
+      mqttClient.publish(debugTopic, "running");
+      setColor(0, 255, 0);
       delay(100);
       setColor(0, 0, 0);
       debugIndex = 0;
     }
-
-    debugIndex++;  if (debugIndex > 1000)
-    {
-      setColor(125, 75, 10);
-      delay(100);
-      setColor(0, 0, 0);
-      debugIndex = 0;
-    }
-
     debugIndex++;
   }
   else
@@ -234,29 +224,12 @@ void ConnectedLoop()
         {
           Data = "";
           Serial.println("datastream started");
+          mqttClient.publish(debugTopic, "datastream started");
         }
 
-        if (c == '!')
+        else if (c == '!')
         {
-          Serial.println("end data received");
-          Serial.print(Data);
-          jsonBuffer.clear();
-          JsonObject& object = dataToLinesStr(Data);
-          char json[object.measureLength()];
-          object.printTo((char*)json, object.measureLength() + 1);
-          Serial.println(json);
-          int error = mqttClient.publish(topic, json);
-          Serial.println(error);
-          if (sizeof(json) > 500)
-          {
-            setColor(10, 10, 10);
-            delay(100);
-            setColor(0, 0, 0);
-          }
-          else
-          {
-            resetLoop();
-          }
+          parseAndSendData();
         }
         Data.concat(c);
       }
@@ -264,11 +237,32 @@ void ConnectedLoop()
   }
 }
 
-void resetLoop()
+void parseAndSendData()
 {
-  Serial.println("reset nessecery");
+  Serial.println("end data received");
+  // Serial.print(Data);
+
   jsonBuffer.clear();
-  delay(2000);
+  Serial.println(sizeof(Data));
+  JsonObject& object = dataToLinesStr(Data);
+  Serial.println("stillworking");
+  char json[object.measureLength()];
+  object.printTo((char*)json, object.measureLength() + 1);
+  //Serial.println("stillworking");
+  int error = mqttClient.publish(topic, json);
+  Serial.println(error);
+  if (sizeof(json) > 500)
+  {
+    setColor(10, 10, 10);
+    delay(100);
+    setColor(0, 0, 0);
+  }
+  else
+  {
+    mqttClient.publish(debugTopic, "json < 500");
+    mqttClient.publish(debugTopic, json);
+    delay(2000);
+  }
 }
 
 
@@ -298,7 +292,7 @@ void mqttConnect() {
     setColor(0, 0, 0);
   } else {
     Serial.printf("%s: MQTT connection ERROR (%s:%d)\n", __FUNCTION__, host, port);
-    setColor(255, 1, 1);
+    setColor(255, 95, 1);
     delay(250);
     setColor(0, 0, 0);
   }
@@ -309,6 +303,7 @@ JsonObject& dataToLinesStr(String data)
   int lineIndex = 0;
   int from = 0;
   String lines[100];
+
   for (int i = 0; i < data.length(); i++)
   {
     if (data[i] == '\n')
@@ -357,6 +352,77 @@ void findKey(String line, JsonObject& measurement)
       measurement["timestamp"] = findTimeStamp(rawValue);
       break;
     }
+    else if (key.indexOf("0-1:24.2.1") > 0)
+    {
+    //  parseGas(rawValue, measurement);
+      Serial.println("gas is not the problem");
+      break;
+    }
+    else if (key.indexOf("1-0:99.97.0") > 0)
+    {
+      parsePowerFailures(rawValue, measurement);
+      Serial.println("fuck power is not the problem");
+      break;
+    }
+  }
+  Serial.println("wortking");
+}
+
+
+
+String parsePowerFailures(String rawValue, JsonObject& measurment)
+{
+  JsonObject& powerFailures = jsonBuffer.createObject();
+  int index = 0;
+  int from = 0;
+  int nmbrOfFailures = 0;
+  String timestamp = "";
+  String timeout = "";
+  //do magic parse of the powerfailures.
+}
+
+
+String parseGas(String rawValue, JsonObject& measurment)
+{
+  //(180309210000W)(03118.623*m3)
+  int index = 0;
+  int from = 0;
+  String timestamp = "";
+  String value = "";
+  Serial.println(rawValue);
+  for (int i = 0; i < 1; i++)
+  {
+    while (rawValue[index] != ')')
+    {
+      if (rawValue[index] == '(')
+      {
+        from = index + 1;
+        if (i == 0)
+        {
+          timestamp = findTimeStamp(rawValue.substring(from, index));
+          ///String debugtimestamp = "gas timestamp: " + timestamp;
+          char timestampDebug[timestamp.length()];
+          //timestamp.printTo((char*)timestampDebug, timestamp.length();
+          strcpy((char*)timestampDebug, timestamp.c_str());
+          mqttClient.publish(debugTopic, timestampDebug);
+          index = 0;
+          //add to measurmentjson with name: gasTimestamp
+        }
+        else if (i == 1)
+        {
+          value = findValue(rawValue.substring(from, index), "*m3");
+
+          char valueDebug[value.length()];
+          //timestamp.printTo((char*)timestampDebug, timestamp.length();
+          strcpy((char*)valueDebug, value.c_str());
+          mqttClient.publish(debugTopic, valueDebug);
+
+          //add to measurmentjson with name: gas
+        }
+      }
+      index++;
+    }
+
   }
 }
 
