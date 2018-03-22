@@ -3,8 +3,12 @@
    <div class="col-2">
      <app-sidebar></app-sidebar>
    </div>
-    <div class="d-flex flex-column col-10 bg-primary p-0">
-      <app-topbar></app-topbar>
+    <div class="d-flex flex-column col-10 p-0">
+        <app-topbar></app-topbar>
+      <div class="h-100 border">
+        <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '14px', animationType: 'hreeBounce' }"></ngx-loading>
+        <app-linechart [chart]="chart"></app-linechart>
+      </div>
     </div>
   </div>
 </div>

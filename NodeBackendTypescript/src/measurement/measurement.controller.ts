@@ -2,6 +2,8 @@ import { IMeasurement } from './measurement.interface';
 import { measurementRepo, MeasurementRepository } from './measurement.repository';
 import { NextFunction, Request, Response } from 'express';
 import { measurement } from './measurement.model';
+import moment = require('moment');
+import { filter } from 'gulp-typescript';
 
 export class MeasurementController {
 
@@ -35,16 +37,6 @@ export class MeasurementController {
         });
     }
 
-    public getAll(req: Request, res: Response, next: NextFunction) {
-        measurementRepo.retrieve((err, measurements: IMeasurement[]) => {
-            if (err) return res.status(500).send('internal server error');
-
-            if (!measurements) return res.status(404).send('measurements not found');
-
-            return res.status(200).json(measurements);
-        });
-    }
-
     public filter(req: Request, res: Response, next: NextFunction) {
         measurementRepo.find(req.query, (err, measurements: IMeasurement[]) => {
             if (err) return res.status(500).send('internal server error');
@@ -55,18 +47,23 @@ export class MeasurementController {
         });
     }
 
-    public betweenDates(req: Request, res: Response, next: NextFunction) {
-        const beginDate: Date = new Date(req.query.beginDate);
-        const endDate: Date = new Date(req.query.endDate);
-        delete req.query.beginDate;
-        delete req.query.endDate;
-        measurementRepo.findBetweenDates('timestamp', beginDate , endDate, req.query, (err, measurements: IMeasurement[]) => {
-            if (err) return res.status(500).send('internal server error');
+    public getAll(req: Request, res: Response, next: NextFunction) {
 
-            if (!measurements) return res.status(404).send('measurements not found');
+        let filter = {};
+        if (req.query.filter) filter = JSON.parse(req.query.filter);
+        (!req.query.beginDate) ? req.query.beginDate = moment('01-01-1970', 'DD-MM-YYYY') :  req.query.beginDate = moment(req.query.beginDate, 'DD-MM-YYYY');
+        (!req.query.endDate) ? req.query.endDate = moment().add(100, 'years') : req.query.endDate = moment(req.query.endDate, 'DD-MM-YYYY');
 
-            return res.status(200).json(measurements);
-        });
+        measurementRepo.find(filter)
+            .where('timestamp').gte(req.query.beginDate.toDate().getTime()).lt(req.query.endDate.toDate().getTime())
+            .select(req.query.select)
+            .exec((err, measurements: IMeasurement[]) => {
+                if (err) return res.status(500).send('internal server error');
+
+                if (!measurements) return res.status(404).send('measurements not found');
+
+                return res.status(200).json(measurements);
+            });
     }
 }
 

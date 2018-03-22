@@ -1,4 +1,6 @@
 import * as mongoose from 'mongoose';
+import moment = require("moment");
+import {Moment} from "moment";
 
 export interface IRead<T> {
     retrieve: (callback: (error: any, result: any) => void) => void;
@@ -49,12 +51,6 @@ export class RepositoryBase<T extends mongoose.Document> implements IRead<T>, IW
 
     find(cond?: Object, fields?: Object, options?: Object, callback?: (err: any, res: T[]) => void): mongoose.Query<any[]> {
         return this._model.find(cond, callback);
-    }
-
-    findBetweenDates(dateFieldName: string, beginDate: Date, endDate: Date, fields?: Object, callback?: (err: any, res: any) => void): mongoose.Query<any[]> {
-        return this._model
-                    .where(dateFieldName).gte(beginDate.getTime()).lte(endDate.getTime())
-                    .find(fields, callback);
     }
 
     private toObjectId(_id: string): mongoose.Types.ObjectId {
