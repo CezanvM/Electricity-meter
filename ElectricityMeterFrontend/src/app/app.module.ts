@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import {AppRoutingModule} from './app.routing.module';
 import {DashboardModule} from './Dashboard/dashboard.module';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {NgxChartsModule} from '@swimlane/ngx-charts';
 
 @NgModule({
   declarations: [

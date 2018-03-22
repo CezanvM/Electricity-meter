@@ -12,7 +12,7 @@ export class MeasurementRouter {
     init() {
         this.router.get('/', measurementController.getAll);
         this.router.get('/filter', measurementController.filter);
-        this.router.get('/between', measurementController.betweenDates);
+        // this.router.get('/between', measurementController.betweenDates);
         this.router.get('/:id', measurementController.get);
         this.router.get('/sensor/:id', measurementController.getBySensorId);
     }

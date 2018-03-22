@@ -44,6 +44,7 @@ export let measurementSchema = new Schema({
     equipmentId2: {
         type: String
     },
+    gasTime: Date,
     gas: Number,
     createdAt: Date,
     modifiedAt: Date
