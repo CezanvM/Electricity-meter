@@ -41,6 +41,7 @@ DNSServer dnsServer;
 IPAddress IP(10, 10, 10, 1);
 boolean wifiConnected = false;
 boolean isSensorSetup = false;
+boolean linking = false;
 int debugIndex = 0;
 
 //LA134-2016
@@ -105,26 +106,40 @@ void connectionSetUp()
 
 void linkSensor()
 {
-  JsonObject& sensorJson = jsonBuffer.createObject();
-  sensorJson["name"] = username;
-  sensorJson["password"] = loginPassword;
-  sensorJson["sensorId"] = WiFi.macAddress();
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("linking sensor");
+    JsonObject& sensorJson = jsonBuffer.createObject();
+    sensorJson["name"] = username;
+    sensorJson["password"] = loginPassword;
+    sensorJson["sensorId"] = WiFi.macAddress();
 
-  char json[sensorJson.measureLength()];
-  sensorJson.printTo((char*)json, sensorJson.measureLength() + 1);
-  Serial.println(json);
+    char json[sensorJson.measureLength()];
+    sensorJson.printTo((char*)json, sensorJson.measureLength() + 1);
+    Serial.println(json);
 
-  HTTPClient http;
-  http.begin("168.227.180.251:3000/authenticate/sensor"); //168.227.180.251:3000/authenticate/sensor
-  http.addHeader("Content-Type", "application/json");
+    HTTPClient http;
+    http.begin("http://168.227.180.251:3000/authenticate/sensor"); //168.227.180.251:3000/authenticate/sensor
+    http.addHeader("Content-Type", "application/json");
 
-  int responseCode = http.POST(json);
-  String response = http.getString();
+    int responseCode = http.POST(json);
+    Serial.println(responseCode);
+    if (responseCode > 0) { //Check the returning code
+      String payload = http.getString(); //Get the request response payload
+      Serial.println(payload); //Print the response payload
+      String response = http.getString();
 
-  Serial.println(responseCode);
-  Serial.println(response);
+      
+      Serial.println(response);
+      linking = true;
+    }
+    else
+    {
+      delay(250);
+    }
 
-  http.end();
+
+    http.end();
+  }
 }
 
 void ApSetUp()
@@ -146,19 +161,16 @@ void ApSetUp()
 }
 
 void loop() {
-  //  if (isSensorSetup)
-  //  {
-  //    ConnectedLoop();
-  //  }
-  //  else
-  //  {
-
-  if (wifiConnected)
+  if (isSensorSetup)
   {
-    //linksensor();
     ConnectedLoop();
     if (debugIndex > 500000)
     {
+      if (mqttClient.connected() != 0)
+      {
+        mqttClient.disconnect();
+        mqttConnect();
+      }
       mqttClient.publish(debugTopic, "running");
       setColor(0, 255, 0);
       delay(100);
@@ -169,10 +181,19 @@ void loop() {
   }
   else
   {
-    APLoop();
+    if (wifiConnected)
+    {
+      if (!linking)
+      {
+        linkSensor();
+      }
+      //ConnectedLoop();
+    }
+    else
+    {
+      APLoop();
+    }
   }
-  //}
-
 }
 
 void APLoop()
@@ -303,7 +324,6 @@ JsonObject& dataToLinesStr(String data)
   int lineIndex = 0;
   int from = 0;
   String lines[100];
-
   for (int i = 0; i < data.length(); i++)
   {
     if (data[i] == '\n')
@@ -327,7 +347,7 @@ JsonObject& parseLinesStr(String lines[], int ArraySize)
   return measurement;
 }
 
-void findKey(String line, JsonObject& measurement)
+void findKey(String line, JsonObject & measurement)
 {
   int index = 0;
   String  key = "";
@@ -354,7 +374,7 @@ void findKey(String line, JsonObject& measurement)
     }
     else if (key.indexOf("0-1:24.2.1") > 0)
     {
-    //  parseGas(rawValue, measurement);
+      //  parseGas(rawValue, measurement);
       Serial.println("gas is not the problem");
       break;
     }
@@ -370,7 +390,7 @@ void findKey(String line, JsonObject& measurement)
 
 
 
-String parsePowerFailures(String rawValue, JsonObject& measurment)
+String parsePowerFailures(String rawValue, JsonObject & measurment)
 {
   JsonObject& powerFailures = jsonBuffer.createObject();
   int index = 0;
@@ -382,7 +402,7 @@ String parsePowerFailures(String rawValue, JsonObject& measurment)
 }
 
 
-String parseGas(String rawValue, JsonObject& measurment)
+String parseGas(String rawValue, JsonObject & measurment)
 {
   //(180309210000W)(03118.623*m3)
   int index = 0;
