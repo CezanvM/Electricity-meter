@@ -80,7 +80,7 @@ export class AuthController {
             }
 
             if (user) {
-                userRepo.comparePassword(req.body.password, <string>user.password, (err, isMatch: boolean) => {
+                userRepo.comparePassword(req.body.password, user.password, (err, isMatch: boolean) => {
                     if (err) return res.status(500).send('internal server error');
 
                     if (!isMatch) return res.status(404).send('failed to authenticate user');
