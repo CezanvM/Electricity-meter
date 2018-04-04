@@ -1,15 +1,17 @@
 <div class="w-100 h-100">
   <div class="row h-100 bg-light">
-   <div class="col-2">
+   <div class="col-lg-2 col-md-2 border-right m-0 p-0">
      <app-sidebar></app-sidebar>
    </div>
     <div class="d-flex flex-column col-10 p-0">
-        <app-topbar></app-topbar>
-      <div class="h-100 border">
-        <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '14px', animationType: 'hreeBounce' }"></ngx-loading>
-        <app-linechart [chart]="chart"></app-linechart>
+      <app-topbar></app-topbar>
+      <div class="h-100 w-100" style="overflow: auto;">
+        <app-linechartcard [chart]="dayChart" [title]="'Energie verbruik van twee weken'"></app-linechartcard>
+        <app-linechartcard [chart]="dayChart" [title]="'Energie verbruik van maand'"></app-linechartcard>
+        <app-linechartcard [chart]="dayChart" [title]="'Energie verbruik van twee maanden'"></app-linechartcard>
+        <app-linechartcard [chart]="dayChart" [title]="'Energie verbruik van half jaar'"></app-linechartcard>
       </div>
     </div>
   </div>
-</div>
+  </div>
 

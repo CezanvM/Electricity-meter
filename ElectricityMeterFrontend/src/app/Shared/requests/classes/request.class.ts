@@ -12,15 +12,14 @@ export class Request<T> {
 
   getParams(): HttpParams {
     const params = new HttpParams()
-      .set('filter', JSON.stringify(this.filter))
-      .set('select', this.select)
-      .set('beginDate', this.beginDate.format('DD-MM-YYYY'))
-      .set('endDate', this.endDate.format('DD-MM-YYYY'));
+      .set('filter', JSON.stringify(this.filter) || JSON.stringify({}))
+      .set('select', this.select || '')
+      .set('beginDate', this.beginDate.format('DD-MM-YYYY') || moment().subtract('100', 'years').format('DD-MM-YYYY'))
+      .set('endDate', this.endDate.format('DD-MM-YYYY') || moment().add('100', 'years').format('DD-MM-YYYY'));
 
     return params;
   }
 
   constructor() {
-
   }
 }

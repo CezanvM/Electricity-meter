@@ -5,16 +5,21 @@ import { DashboardpageComponent } from './pages/dashboardpage/dashboardpage.comp
 import { TopbarComponent } from './components/topbar/topbar.component';
 import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { SharedModule } from '../Shared/shared.module';
-import { LoadingModule } from 'ngx-loading';
+import { NgHttpLoaderModule } from 'ng-http-loader/ng-http-loader.module';
+import {ChartsModule} from '../Shared/ngxCharts/charts.module';
+import { UserpageComponent } from './pages/userpage/userpage.component';
+
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
     SharedModule,
-    LoadingModule
+    ChartsModule,
+    NgHttpLoaderModule
   ],
-  declarations: [DashboardpageComponent, TopbarComponent, SidebarComponent],
-  exports: [ DashboardpageComponent, TopbarComponent, SidebarComponent ]
+  declarations: [DashboardpageComponent, TopbarComponent, SidebarComponent, UserpageComponent],
+  exports: [ DashboardpageComponent, TopbarComponent, SidebarComponent ],
+
 })
 export class DashboardModule { }

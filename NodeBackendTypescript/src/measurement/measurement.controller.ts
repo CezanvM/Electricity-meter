@@ -50,7 +50,7 @@ export class MeasurementController {
     public getAll(req: Request, res: Response, next: NextFunction) {
 
         let filter = {};
-        if (req.query.filter) filter = JSON.parse(req.query.filter);
+        if (req.query.filter != null) filter = JSON.parse(req.query.filter);
         (!req.query.beginDate) ? req.query.beginDate = moment('01-01-1970', 'DD-MM-YYYY') :  req.query.beginDate = moment(req.query.beginDate, 'DD-MM-YYYY');
         (!req.query.endDate) ? req.query.endDate = moment().add(100, 'years') : req.query.endDate = moment(req.query.endDate, 'DD-MM-YYYY');
 

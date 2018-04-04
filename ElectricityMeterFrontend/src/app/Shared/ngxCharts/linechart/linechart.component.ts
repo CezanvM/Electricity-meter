@@ -1,7 +1,6 @@
 import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
 import {LineChartComponent} from '@swimlane/ngx-charts';
 import { LineChart } from './classes/linechart.class';
-import {Singledata} from '../basechart/singledata.class';
 
 @Component({
   selector: 'app-linechart',
@@ -11,6 +10,8 @@ import {Singledata} from '../basechart/singledata.class';
 export class CustomLineChartComponent implements OnInit, AfterViewInit {
 
   @Input() chart: LineChart;
+
+  @Input() loading: boolean;
 
   @ViewChild(LineChartComponent)
   chartComponent: LineChartComponent;
@@ -25,6 +26,8 @@ export class CustomLineChartComponent implements OnInit, AfterViewInit {
   };
 
   constructor() {
+    this.loading = true;
+    this.chart = new LineChart();
   }
 
   ngAfterViewInit(): void {
@@ -42,6 +45,10 @@ export class CustomLineChartComponent implements OnInit, AfterViewInit {
     this.chartComponent.legend = this.chart.legend;
     this.chartComponent.xAxisLabel = this.chart.xAxisLabel;
     this.chartComponent.yAxisLabel = this.chart.yAxisLabel;
+    this.chartComponent.autoScale = this.chart.autoScale;
+    this.chartComponent.tooltipDisabled = this.chart.disableTooltip;
+    this.chartComponent.timeline = this.chart.timeline;
+    this.chartComponent.animations = false;
     this.update();
   }
 

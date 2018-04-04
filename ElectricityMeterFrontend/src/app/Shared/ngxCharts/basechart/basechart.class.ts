@@ -5,6 +5,9 @@ export class Basechart implements IBaseChart {
   public yAxisLabel: string;
   public showXAxisLabel: boolean;
   public showYAxisLabel: boolean;
+  public autoScale: boolean;
+  public timeline: boolean;
+  public disableTooltip: boolean;
   public xAxis: boolean;
   public yAxis: boolean;
   public legend: boolean;
@@ -13,13 +16,13 @@ export class Basechart implements IBaseChart {
   constructor(json?: any) {
     const defaults = this.getDefaults();
 
-    for (const prop in json) defaults[prop] = json[prop];
+    for (const prop in json) { defaults[prop] = json[prop]; }
 
-    for (const prop in defaults) this[prop] = defaults[prop];
+    for (const prop in defaults) { this[prop] = defaults[prop]; }
   }
 
   private getDefaults() {
-      return {
+      return <IBaseChart>{
         data:  [],
         xAxisLabel: '',
         yAxisLabel: '',
@@ -27,7 +30,10 @@ export class Basechart implements IBaseChart {
         showYAxisLabel: true,
         xAxis: true,
         yAxis: true,
-        legend: true
+        legend: true,
+        timeline: false,
+        disableTooltip: true,
+        autoScale: true
       };
   }
 }
