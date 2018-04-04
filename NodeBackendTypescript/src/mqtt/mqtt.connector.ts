@@ -13,17 +13,17 @@ export class  MqttConnector {
             this.mqttClient.subscribe('measurement');
         });
 
-        // this.mqttClient.on('message', (topic, message) => {
-        //
-        //     try  {
-        //         message = JSON.parse(message);
-        //     } catch {
-        //         console.warn('not a valid json');
-        //     }
-        //     // message is Buffer
-        //     if (topic === measurementTopic) {
-        //         measurementController.handleMeasurement(message);
-        //     }
-        // });
+        this.mqttClient.on('message', (topic, message) => {
+
+            try  {
+                message = JSON.parse(message);
+            } catch {
+                console.warn('not a valid json');
+            }
+            // message is Buffer
+            if (topic === measurementTopic) {
+                measurementController.handleMeasurement(message);
+            }
+        });
     }
 }
