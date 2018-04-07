@@ -12,15 +12,22 @@ import {Subject} from 'rxjs/Subject';
 export class AuthService implements  OnDestroy {
 
   private stop$: Subject<any>;
+  public user: User;
 
   constructor(private http: HttpClient) {
     this.stop$ = new Subject<any>();
   }
 
   login(username: string, password: string ) {
-    return this.http.post<any>('authenticate', {name: username, password: password})
+    return this.http.post<any>('authenticate', {username: username, password: password})
       .takeUntil(this.stop$)
       .do(e => this.setSession(e))
+      .shareReplay();
+  }
+
+  createAccount(user: User) {
+    return this.http.post('authenticate/createAccount', user)
+      .takeUntil(this.stop$)
       .shareReplay();
   }
 
@@ -35,11 +42,18 @@ export class AuthService implements  OnDestroy {
       localStorage.setItem('id_token', authResult.id_token);
       localStorage.setItem('expires_at', JSON.stringify(authResult.expires_at) );
     }
+
+    if (authResult.user) {
+      localStorage.setItem('userId', authResult.user._id);
+      localStorage.setItem('sensorId', authResult.user.sensorId);
+    }
   }
 
   logout() {
     localStorage.removeItem('id_token');
     localStorage.removeItem('expires_at');
+    localStorage.removeItem('sensorId');
+    localStorage.removeItem('userId');
   }
 
   public isLoggedIn() {

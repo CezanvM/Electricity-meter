@@ -4,7 +4,7 @@ exports.auth = function (client, username, password, callback) {
 
     if(username && password) {
         userModel.findOne({
-            name: username
+            username: username
         }, (err, user) => {
             if(err) throw err;
 

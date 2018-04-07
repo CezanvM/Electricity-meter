@@ -22,18 +22,22 @@ export class Basechart implements IBaseChart {
   }
 
   private getDefaults() {
-      return <IBaseChart>{
-        data:  [],
-        xAxisLabel: '',
-        yAxisLabel: '',
-        showXAxisLabel: true,
-        showYAxisLabel: true,
-        xAxis: true,
-        yAxis: true,
-        legend: true,
-        timeline: false,
-        disableTooltip: true,
-        autoScale: true
-      };
+    return <IBaseChart>{
+      data:  [],
+      xAxisLabel: '',
+      yAxisLabel: '',
+      showXAxisLabel: true,
+      showYAxisLabel: true,
+      xAxis: true,
+      yAxis: true,
+      legend: true,
+      timeline: true,
+      disableTooltip: true,
+      autoScale: true
+    };
+  }
+
+  public update() {
+    this.data = [...this.data];
   }
 }

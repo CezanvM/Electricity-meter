@@ -10,7 +10,7 @@ export class AuthController {
     public authenticate(req: Request, res: Response) {
 
         userRepo.findOne({
-            name: req.body.name
+            username: req.body.username
         }, (err, user) => {
             if (err) throw err;
 
@@ -33,7 +33,8 @@ export class AuthController {
                         // return the information including token as JSON
                         res.status(200).json({
                             id_token: token,
-                            expires_at: moment().add(7, 'days')
+                            expires_at: moment().add(7, 'days'),
+                            user: user.toJSON()
                         });
                     } else {
                         return res.json({ success: false, message: 'failed to authenticate user' });

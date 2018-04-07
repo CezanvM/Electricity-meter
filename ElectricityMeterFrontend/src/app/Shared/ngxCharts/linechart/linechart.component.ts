@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, Input, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild} from '@angular/core';
 import {LineChartComponent} from '@swimlane/ngx-charts';
 import { LineChart } from './classes/linechart.class';
 
@@ -7,7 +7,7 @@ import { LineChart } from './classes/linechart.class';
   templateUrl: './linechart.component.html',
   styleUrls: ['./linechart.component.scss']
 })
-export class CustomLineChartComponent implements OnInit, AfterViewInit {
+export class CustomLineChartComponent implements OnInit, AfterViewInit, OnChanges {
 
   @Input() chart: LineChart;
 
@@ -37,6 +37,9 @@ export class CustomLineChartComponent implements OnInit, AfterViewInit {
   ngOnInit() {
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+  }
+
   private init() {
     this.chartComponent.showXAxisLabel = this.chart.showXAxisLabel;
     this.chartComponent.showYAxisLabel = this.chart.showYAxisLabel;
@@ -49,10 +52,6 @@ export class CustomLineChartComponent implements OnInit, AfterViewInit {
     this.chartComponent.tooltipDisabled = this.chart.disableTooltip;
     this.chartComponent.timeline = this.chart.timeline;
     this.chartComponent.animations = false;
-    this.update();
-  }
-
-  public update() {
-    this.chart.data = [...this.chart.data];
+    this.chart.update();
   }
 }

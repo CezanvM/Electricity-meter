@@ -1,6 +1,4 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {LineChart} from '../classes/linechart.class';
-import {Line} from 'tslint/lib/verify/lines';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 
 @Component({
   selector: 'app-linechartcard',
@@ -10,15 +8,18 @@ import {Line} from 'tslint/lib/verify/lines';
 export class LinechartcardComponent implements OnInit {
 
   @Input()
-  chart: LineChart;
-
-  @Input()
   title = '';
+
+  @Output()
+  public dateSelected: EventEmitter<any> = new EventEmitter<any>();
+
   constructor() {
-    this.chart = new LineChart();
   }
 
   ngOnInit() {
   }
 
+  OnDateChanged($event) {
+      this.dateSelected.emit($event);
+  }
 }

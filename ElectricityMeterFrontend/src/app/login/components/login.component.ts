@@ -1,14 +1,13 @@
-import { Component, OnInit } from '@angular/core';
-import {AuthService} from './services/auth.service';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {AuthService} from '../services/auth.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {User} from '../data/user/user.class';
+import {User} from '../../data/user/user.class';
 import {SweetAlertService} from 'ngx-sweetalert2';
-import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit {
 
@@ -16,15 +15,17 @@ export class LoginComponent implements OnInit {
   user: User;
   isLoggedIn: boolean;
 
+  @Output()
+  public onCreateAccount: EventEmitter<any> = new EventEmitter<any>();
+  @Output()
+  public onLogin: EventEmitter<any> = new EventEmitter<any>();
+
   constructor(public authService: AuthService, private fb: FormBuilder, private alertService: SweetAlertService) {
     this.user = new User();
     this.loginForm = this.fb.group({
       username: ['', Validators.required],
       password: ['', Validators.required]
     });
-
-
-    this.isLoggedIn = authService.isLoggedIn();
   }
 
   ngOnInit() {
@@ -35,6 +36,7 @@ export class LoginComponent implements OnInit {
       this.authService.login(this.user.username, this.user.password)
         .subscribe(e => {
           this.isLoggedIn = this.authService.isLoggedIn();
+          this.onLogin.emit(this.isLoggedIn);
           if (!this.isLoggedIn) {
             this.alertService.error({ title: 'Error!', text: 'error logging in'});
           }
@@ -42,4 +44,7 @@ export class LoginComponent implements OnInit {
     }
   }
 
+  onCreateAccountClick() {
+    this.onCreateAccount.emit(true);
+  }
 }

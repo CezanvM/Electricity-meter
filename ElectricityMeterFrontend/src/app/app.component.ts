@@ -1,6 +1,6 @@
 import {Component, ViewChild} from '@angular/core';
 
-import {LoginComponent} from './login/login.component';
+import {LoginComponent} from './login/components/login.component';
 
 @Component({
   selector: 'app-root',

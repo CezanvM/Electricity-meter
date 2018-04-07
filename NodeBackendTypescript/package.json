@@ -34,6 +34,7 @@
   "dependencies": {
     "@types/bcrypt": "^1.0.0",
     "@types/mqtt": "^2.5.0",
+    "@types/validator": "^9.4.0",
     "bcrypt": "^1.0.3",
     "body-parser": "^1.18.2",
     "cors": "^2.8.4",
@@ -45,6 +46,7 @@
     "mongoose": "^5.0.9",
     "morgan": "^1.9.0",
     "mqtt": "^2.16.0",
-    "npm": "^5.7.1"
+    "npm": "^5.7.1",
+    "validator": "^9.4.1"
   }
 }

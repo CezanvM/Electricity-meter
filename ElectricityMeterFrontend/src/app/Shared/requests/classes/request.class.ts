@@ -1,8 +1,10 @@
 import {HttpParams} from '@angular/common/http';
 import {Moment} from 'moment';
 import moment = require('moment');
+import {IBaseChart} from '../../ngxCharts/basechart/basechart.interface';
+import {IRequest} from '../interfaces/request.interface';
 
-export class Request<T> {
+export class Request<T> implements IRequest<T> {
   public url: string;
   public item: T;
   public filter: any;
@@ -20,6 +22,23 @@ export class Request<T> {
     return params;
   }
 
-  constructor() {
+  constructor(json?: any) {
+    const defaults = this.getDefaults();
+
+    for(const prop in json) { defaults[prop] = json[prop]; }
+
+    for(const prop in defaults) { this[prop] = defaults[prop]; }
+
+  }
+
+  private getDefaults() {
+    return <IRequest<T>>{
+      beginDate: moment(),
+      enDate: moment(),
+      filter: {},
+      item: null,
+      select: '',
+      url: ''
+    };
   }
 }
