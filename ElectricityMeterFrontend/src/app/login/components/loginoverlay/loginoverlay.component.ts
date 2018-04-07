@@ -23,11 +23,9 @@ import {AuthService} from '../../services/auth.service';
       query('*', style({ opacity: 0}), {optional: true}),
       query('*', stagger('300ms', [
         animate('0.8s ease-in', keyframes([
-          style({opacity: 0}),
-          style({opacity: .25}),
-          style({opacity: .5}),
-          style({opacity: .75}),
-          style({opacity: 1}),
+          style({opacity: 0, transform: 'translateY(-75%)', offset: 0}),
+          style({opacity: .5, transform: 'translateY(35px)', offset: 0.3}),
+          style({opacity: 1, transform: 'translateY(0)', offset: 1.0}),
         ]))]), {optional: true}),
     ])
   ])

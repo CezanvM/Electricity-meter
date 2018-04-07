@@ -1,4 +1,4 @@
-<div class="w-100 h-100" *ngIf="authService.isLoggedIn()" [@ngIfInAnimation]>
+<div class="w-100 h-100" *ngIf="authService.isLoggedIn()" [@ngIfInAnimation] [@ngIfOutAnimation]>
   <div class="d-flex flex-column w-100">
     <app-topbar></app-topbar>
     <app-paginationbar></app-paginationbar>

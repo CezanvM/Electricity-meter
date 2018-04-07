@@ -14,11 +14,22 @@ import 'rxjs/add/operator/take';
   templateUrl: './dashboardpage.component.html',
   styleUrls: ['./dashboardpage.component.scss'],
   animations: [
+    trigger('ngIfOutAnimation', [
+    transition('* => void', [
+      query('*', style({ opacity: 1}), {optional: true}),
+      query('*', stagger('300ms', [
+        animate('0.8s ease-in', keyframes([
+          style({opacity: 1, transform: 'translateY(0)', offset: 0}),
+          style({opacity: .5, transform: 'translateY(35px)', offset: 0.3}),
+          style({opacity: 0, transform: 'translateY(-75%)', offset: 1.0}),
+        ]))]), {optional: true}),
+    ])
+  ]),
     trigger('ngIfInAnimation', [
       transition('void => *', [
         query('*', style({ opacity: 0}), {optional: true}),
         query('*', stagger('100ms', [
-          animate('0.8s ease-in', keyframes([
+          animate('3s ease-in', keyframes([
             style({opacity: 0}),
             style({opacity: .5}),
             style({opacity: 1}),
