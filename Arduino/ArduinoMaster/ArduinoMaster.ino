@@ -5,6 +5,7 @@
 #include <ESP8266HTTPClient.h>
 #include <ESP8266WebServer.h>
 #include "./DNSServer.h"
+#include <EEPROM.h>
 
 String Datagram[20][3] = {
   { "1-3:0.2.8", "version" },
@@ -33,6 +34,7 @@ String Datagram[20][3] = {
 int redPin = 14;
 int greenPin = 12;
 int bluePin = 13;
+int resetPin =  5;
 
 String Data;
 DynamicJsonBuffer jsonBuffer;
@@ -61,19 +63,107 @@ PubSubClient mqttClient("", 0, wifiClient);
 
 const char *host = "165.227.180.251";
 uint16_t port = 1234;
-const char *debugTopic = "debugSensor";
-const char *topic = "measurement";
+const char *debugTopic = "debugSensor_school";
+const char *topic = "measurement_school";
 String html = "<h1>werkt lekker kinker</h1>";
 String html2 = "<!DOCTYPE html>\n<html>\n<body>\n<h2> WIFI</h2>\nssid: <input type=\"text\" id=\"ssid\" value=\"\"><br>\npassword: <input type=\"text\" id=\"password\" value=\"\">\n<h2>LOGIN</h2>\nusername <input type=\"text\" id=\"username\" value=\"\"><br>\npassword <input type=\"text\" id=\"loginPassword\" value=\"\">\n<p><button onclick=\"login()\">Login</button></p>\n<script>\n\u0009var ssid; \n\u0009var password; \n\u0009var username; \n\u0009var loginPassword;\n\u0009var url = \"\"; \n\u0009\n\u0009function login()\n\u0009{\n\u0009url = \"\";\n\u0009ssid = document.getElementById('ssid').value;\n\u0009password = document.getElementById('password').value;\n\u0009username = document.getElementById('username').value;\n\u0009loginPassword = document.getElementById('loginPassword').value;\n\u0009\n\u0009insertParam(\"ssid\",ssid);\n\u0009insertParam(\"password\",password);\n\u0009insertParam(\"username\",username);\n\u0009insertParam(\"loginPassword\",loginPassword);\n\u0009\n\u0009document.location.search = url;\n\u0009}\n\u0009function insertParam(key, value)\n\u0009{\n\n    key = encodeURI(key); value = encodeURI(value);\n\n    var kvp = document.location.search.substr(1).split('&');\n\u0009console.log(kvp);\n    var i=kvp.length; var x; while(i--) \n    {\n        x = kvp[i].split('=');\n\n        if (x[0]==key)\n        {\n            x[1] = value;\n            kvp[i] = x.join('=');\n            break;\n        }\n    }\n\n    if(i<0) {kvp[kvp.length] = [key,value].join('=');}\n\u0009\n    //this will reload the page, it's likely better to store this until finished\n\u0009url = url + kvp.join('&');\n\u0009console.log(url);\n}\n</script>\n</body>\n</html>";
+uint userDataAddress = 42;
+struct {
+  uint valid = 0;
+  char ssid[25] = "";
+  char password[25] = "";
+  char username[25] = "";
+  char userPassword[25] = "";
+} userStruct;
 
 void setup() {
   delay(1000);
   Serial.begin(115200);
   ledSetup();
-  ApSetUp();
+  // clearUser();
+  Serial.println("geting user");
+  if (!getUser())
+  {
+    Serial.println("data not valid");
+    ApSetUp();
+  }
+  else
+  {
+    Serial.println("data valid");
+    connectionSetUp();
+  }
 
 }
 
+boolean getUser()
+{
+  EEPROM.begin(512);
+  EEPROM.get(userDataAddress, userStruct);
+  Serial.println("reloaded data found" + String(userStruct.valid) + ", " + String(userStruct.ssid) + ", " + String(userStruct.password) + ", " + String(userStruct.username) + ", " + String(userStruct.userPassword));
+  if (userStruct.valid == 43)
+  {
+    ssid = userStruct.ssid;
+    password = userStruct.password;
+    username = userStruct.username;
+    loginPassword = userStruct.userPassword;
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+void saveUser(String ssid, String password, String username, String userPassword)
+{
+  userStruct.valid = 43;
+  strncpy(userStruct.ssid, ssid.c_str(), 25);
+  strncpy(userStruct.password, password.c_str(), 25);
+  strncpy(userStruct.username, username.c_str(), 25);
+  strncpy(userStruct.userPassword, userPassword.c_str(), 25);
+  EEPROM.put(userDataAddress, userStruct);
+  EEPROM.commit();
+
+  //clear struct
+  userStruct.valid = 0;
+  strncpy(userStruct.ssid, "", 25);
+  strncpy(userStruct.password, "", 25);
+  strncpy(userStruct.username, "", 25);
+  strncpy(userStruct.userPassword, "", 25);
+  // reload struct for check
+  EEPROM.get(userDataAddress, userStruct);
+  Serial.println("reloaded data found" + String(userStruct.valid) + ", " + String(userStruct.ssid) + ", " + String(userStruct.password) + ", " + String(userStruct.username) + ", " + String(userStruct.userPassword));
+  if (userStruct.valid == 43)
+  {
+    Serial.println("data is valid");
+  }
+}
+
+void clearUser()
+{
+  userStruct.valid = 0;
+  strncpy(userStruct.ssid, "", 25);
+  strncpy(userStruct.password, "", 25);
+  EEPROM.put(userDataAddress, userStruct);
+  EEPROM.commit();
+  userStruct.valid = 0;
+  strncpy(userStruct.ssid, "", 25);
+  strncpy(userStruct.password, "", 25);
+  strncpy(userStruct.username, "", 25);
+  strncpy(userStruct.userPassword, "", 25);
+  // reload struct for check
+  EEPROM.get(userDataAddress, userStruct);
+  Serial.println("reloaded data found" + String(userStruct.valid) + ", " + String(userStruct.ssid) + ", " + String(userStruct.password) + ", " + String(userStruct.username) + ", " + String(userStruct.userPassword));
+  if (userStruct.valid == 0)
+  {
+    Serial.println("clear is valid");
+  }
+  else
+  {
+    Serial.println("clearfailed");
+  }
+
+}
 void ledSetup()
 {
   pinMode(redPin, OUTPUT);
@@ -92,12 +182,12 @@ void connectionSetUp()
     delay(500);
     Serial.println("connecting");
     wifiConnected = true;
-    //setup sensor with post call
     if (connectionIndex > 20)
     {
       Serial.println("Connection timed out");
       setColor(255, 1, 1);
       wifiConnected = false;
+      clearUser();
       break;
     }
     connectionIndex++;
@@ -107,6 +197,7 @@ void connectionSetUp()
 void linkSensor()
 {
   if (WiFi.status() == WL_CONNECTED) {
+    saveUser(ssid, password, username, loginPassword);
     Serial.println("linking sensor");
     JsonObject& sensorJson = jsonBuffer.createObject();
     sensorJson["name"] = username;
@@ -115,29 +206,25 @@ void linkSensor()
 
     char json[sensorJson.measureLength()];
     sensorJson.printTo((char*)json, sensorJson.measureLength() + 1);
-    Serial.println(json);
-
+    String jsonSTR = json;
     HTTPClient http;
-    http.begin("http://168.227.180.251:3000/authenticate/sensor"); //168.227.180.251:3000/authenticate/sensor
+    http.begin("http://165.227.180.251:2500/authenticate/sensor"); //168.227.180.251:3000/authenticate/sensor
     http.addHeader("Content-Type", "application/json");
-
-    int responseCode = http.POST(json);
+    Serial.println(jsonSTR);
+    int responseCode = http.POST(jsonSTR);
     Serial.println(responseCode);
     if (responseCode > 0) { //Check the returning code
       String payload = http.getString(); //Get the request response payload
       Serial.println(payload); //Print the response payload
       String response = http.getString();
-
-      
       Serial.println(response);
       linking = true;
+      isSensorSetup = true;
     }
     else
     {
       delay(250);
     }
-
-
     http.end();
   }
 }
@@ -164,20 +251,8 @@ void loop() {
   if (isSensorSetup)
   {
     ConnectedLoop();
-    if (debugIndex > 500000)
-    {
-      if (mqttClient.connected() != 0)
-      {
-        mqttClient.disconnect();
-        mqttConnect();
-      }
-      mqttClient.publish(debugTopic, "running");
-      setColor(0, 255, 0);
-      delay(100);
-      setColor(0, 0, 0);
-      debugIndex = 0;
-    }
-    debugIndex++;
+    buttonLoop();
+    debugLoop();
   }
   else
   {
@@ -186,8 +261,8 @@ void loop() {
       if (!linking)
       {
         linkSensor();
+        delay(1000);
       }
-      //ConnectedLoop();
     }
     else
     {
@@ -195,10 +270,36 @@ void loop() {
     }
   }
 }
+void resetNow()
+{
+  while (true) {};
+}
+
+void buttonLoop()
+{
+  if (digitalRead(resetPin) == HIGH)
+  {
+    clearUser();
+    delay(500);
+    resetNow();
+  }
+}
+
+void debugLoop()
+{
+  if (debugIndex > 500000)
+  {
+    mqttClient.publish(debugTopic, "running");
+    setColor(0, 255, 0);
+    delay(100);
+    setColor(0, 0, 0);
+    debugIndex = 0;
+  }
+  debugIndex++;
+}
 
 void APLoop()
 {
-  //dnsServer.processNextRequest();
   server.handleClient();
   if (ssid == "")
   {
@@ -212,12 +313,10 @@ void APLoop()
           password = server.arg(i + 1);
           username = server.arg(i + 2);
           loginPassword = server.arg(i + 3);
-
           Serial.println(ssid);
           Serial.println(password);
           Serial.println(username);
           Serial.println(loginPassword);
-
           server.send(200, "text/html", html);
           closeAP();
           connectionSetUp();
@@ -247,7 +346,6 @@ void ConnectedLoop()
           Serial.println("datastream started");
           mqttClient.publish(debugTopic, "datastream started");
         }
-
         else if (c == '!')
         {
           parseAndSendData();
@@ -261,17 +359,24 @@ void ConnectedLoop()
 void parseAndSendData()
 {
   Serial.println("end data received");
-  // Serial.print(Data);
 
   jsonBuffer.clear();
   Serial.println(sizeof(Data));
   JsonObject& object = dataToLinesStr(Data);
-  Serial.println("stillworking");
   char json[object.measureLength()];
   object.printTo((char*)json, object.measureLength() + 1);
   //Serial.println("stillworking");
   int error = mqttClient.publish(topic, json);
-  Serial.println(error);
+  if (error != 1)
+  {
+    mqttClient.disconnect();
+    delay(2500);
+    mqttConnect();
+  }
+  else
+  {
+    Serial.println("data send");
+  }
   if (sizeof(json) > 500)
   {
     setColor(10, 10, 10);
@@ -374,23 +479,18 @@ void findKey(String line, JsonObject & measurement)
     }
     else if (key.indexOf("0-1:24.2.1") > 0)
     {
-      //  parseGas(rawValue, measurement);
-      Serial.println("gas is not the problem");
+      parseGas(rawValue, measurement);
       break;
     }
     else if (key.indexOf("1-0:99.97.0") > 0)
     {
-      parsePowerFailures(rawValue, measurement);
-      Serial.println("fuck power is not the problem");
+    //  parsePowerFailures(rawValue, measurement);
       break;
     }
   }
-  Serial.println("wortking");
 }
 
-
-
-String parsePowerFailures(String rawValue, JsonObject & measurment)
+String parsePowerFailures(String rawValue, JsonObject & measurement)
 {
   JsonObject& powerFailures = jsonBuffer.createObject();
   int index = 0;
@@ -402,47 +502,38 @@ String parsePowerFailures(String rawValue, JsonObject & measurment)
 }
 
 
-String parseGas(String rawValue, JsonObject & measurment)
+String parseGas(String rawValue, JsonObject & measurement)
 {
   //(180309210000W)(03118.623*m3)
   int index = 0;
   int from = 0;
   String timestamp = "";
   String value = "";
-  Serial.println(rawValue);
-  for (int i = 0; i < 1; i++)
+  for (int i = 0; i < 2; i++)
   {
     while (rawValue[index] != ')')
     {
       if (rawValue[index] == '(')
       {
-        from = index + 1;
-        if (i == 0)
-        {
-          timestamp = findTimeStamp(rawValue.substring(from, index));
-          ///String debugtimestamp = "gas timestamp: " + timestamp;
-          char timestampDebug[timestamp.length()];
-          //timestamp.printTo((char*)timestampDebug, timestamp.length();
-          strcpy((char*)timestampDebug, timestamp.c_str());
-          mqttClient.publish(debugTopic, timestampDebug);
-          index = 0;
-          //add to measurmentjson with name: gasTimestamp
-        }
-        else if (i == 1)
-        {
-          value = findValue(rawValue.substring(from, index), "*m3");
-
-          char valueDebug[value.length()];
-          //timestamp.printTo((char*)timestampDebug, timestamp.length();
-          strcpy((char*)valueDebug, value.c_str());
-          mqttClient.publish(debugTopic, valueDebug);
-
-          //add to measurmentjson with name: gas
-        }
+        from = index;
       }
       index++;
     }
-
+    if (i == 0)
+    {
+      timestamp = findTimeStamp(rawValue.substring(from, index +1));
+      ///String debugtimestamp = "gas timestamp: " + timestamp;
+      
+      measurement["gasTime"] = timestamp;
+      rawValue = rawValue.substring(index+1, rawValue.length());
+      index = 0;
+      //add to measurmentjson with name: gasTimestamp   
+    }
+    else if (i == 1)
+    {
+      value = findValue(rawValue.substring(from, index +1), "*m3"); 
+      measurement["gas"] = value;
+    }
   }
 }
 
