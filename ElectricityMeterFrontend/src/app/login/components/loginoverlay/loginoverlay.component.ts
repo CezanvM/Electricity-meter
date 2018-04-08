@@ -37,7 +37,7 @@ export class LoginoverlayComponent implements OnInit {
   isLogin = true;
   isLoggedIn: boolean;
 
-  constructor(private authService: AuthService) {
+  constructor(public authService: AuthService) {
     this.isLoggedIn = this.authService.isLoggedIn();
   }
 

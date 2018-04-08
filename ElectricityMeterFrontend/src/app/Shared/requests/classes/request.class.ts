@@ -1,7 +1,6 @@
 import {HttpParams} from '@angular/common/http';
-import {Moment} from 'moment';
-import moment = require('moment');
-import {IBaseChart} from '../../ngxCharts/basechart/basechart.interface';
+import * as moment from 'moment';
+import { Moment } from 'moment';
 import {IRequest} from '../interfaces/request.interface';
 
 export class Request<T> implements IRequest<T> {

@@ -4,7 +4,7 @@ import {LineChart} from '../../../Shared/ngxCharts/linechart/classes/linechart.c
 import {Request} from '../../../Shared/requests/classes/request.class';
 import {IBaseChart} from '../../../Shared/ngxCharts/basechart/basechart.interface';
 import {MultiDataSerie} from '../../../Shared/ngxCharts/basechart/multiItemSeries.class';
-import moment = require('moment');
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-energyusagecard',

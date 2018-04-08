@@ -1,12 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import {LineChart} from '../../../Shared/ngxCharts/linechart/classes/linechart.class';
-import {IBaseChart} from '../../../Shared/ngxCharts/basechart/basechart.interface';
-import {Request} from '../../../Shared/requests/classes/request.class';
-import moment = require('moment');
-import {RequesthelperService} from '../../../Shared/requests/services/requesthelper.service';
-import {MultiItem} from '../../../Shared/ngxCharts/basechart/multiitem.class';
-import {ChartdataService} from '../../../Shared/ngxCharts/services/chartdata.service';
-import {MultiDataSerie} from '../../../Shared/ngxCharts/basechart/multiItemSeries.class';
 import {NgxCarousel} from 'ngx-carousel';
 
 @Component({
@@ -30,14 +22,10 @@ export class MeasurementpageComponent implements OnInit {
       },
       load: 2,
       loop: false,
-      touch: false,
-      currentSlide: 3
+      touch: false
     });
   }
 
   public myfunc(event: Event) {
-    // carouselLoad will trigger this funnction when your load value reaches
-    // it is helps to load the data by parts to increase the performance of the app
-    // must use feature to all carousel
   }
 }

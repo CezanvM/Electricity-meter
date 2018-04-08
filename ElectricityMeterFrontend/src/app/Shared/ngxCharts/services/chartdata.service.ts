@@ -4,7 +4,7 @@ import {MultiItem} from '../basechart/multiitem.class';
 import {SingleItem} from '../basechart/singleItem.class';
 import {RequesthelperService} from '../../requests/services/requesthelper.service';
 import {Request} from '../../requests/classes/request.class';
-import moment = require('moment');
+import * as moment from 'moment';
 
 @Injectable()
 export class ChartdataService {

@@ -7,6 +7,8 @@ import {Component, EventEmitter, Output} from '@angular/core';
 })
 export class DatepickerComponent {
 
+  public daterange = [];
+
   @Output()
   public onDateChanged: EventEmitter<any> = new EventEmitter<any>();
   // see original project for full list of options
