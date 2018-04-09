@@ -1,19 +1,18 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {ChartdataService} from '../../../Shared/ngxCharts/services/chartdata.service';
-import {LineChart} from '../../../Shared/ngxCharts/linechart/classes/linechart.class';
-import {Request} from '../../../Shared/requests/classes/request.class';
-import {IBaseChart} from '../../../Shared/ngxCharts/basechart/basechart.interface';
-import {MultiDataSerie} from '../../../Shared/ngxCharts/basechart/multiItemSeries.class';
-import * as moment from 'moment';
 import {LinechartcardComponent} from '../../../Shared/ngxCharts/linechart/linechartcard/linechartcard.component';
+import {LineChart} from '../../../Shared/ngxCharts/linechart/classes/linechart.class';
+import {ChartdataService} from '../../../Shared/ngxCharts/services/chartdata.service';
 import {Ng4LoadingSpinnerService} from 'ng4-loading-spinner';
+import {IBaseChart} from '../../../Shared/ngxCharts/basechart/basechart.interface';
+import {Request} from '../../../Shared/requests/classes/request.class';
+import {MultiDataSerie} from '../../../Shared/ngxCharts/basechart/multiItemSeries.class';
 
 @Component({
-  selector: 'app-energyusagecard',
-  templateUrl: './energyusagecard.component.html',
-  styleUrls: ['./energyusagecard.component.scss']
+  selector: 'app-gascard',
+  templateUrl: './gascard.component.html',
+  styleUrls: ['./gascard.component.scss']
 })
-export class EnergyusagecardComponent implements OnInit {
+export class GascardComponent implements OnInit {
 
   public chart: LineChart;
   public dataSource: MultiDataSerie[];
@@ -27,7 +26,7 @@ export class EnergyusagecardComponent implements OnInit {
     this.chart = new LineChart(<IBaseChart>{
       data:  [],
       xAxisLabel: 'Time',
-      yAxisLabel: 'Energy Usage (kWh)',
+      yAxisLabel: 'Gas (kWh)',
       showXAxisLabel: true,
       showYAxisLabel: true,
       xAxis: true,
@@ -50,10 +49,10 @@ export class EnergyusagecardComponent implements OnInit {
     request.endDate = $event.end;
     request.filter = {sensorId: localStorage.getItem('sensorId')};
 
-    this.dataService.getMultiDataSourceWithDate<number>('activePowerPlus', 'timestamp', request)
+    this.dataService.getMultiDataSourceWithDate<number>('gas', 'gasTime', request)
       .subscribe((dataSource) => {
         this.spinnerService.hide();
-        this.dataSource.push(new MultiDataSerie('Active Power Plus', dataSource));
+        this.dataSource.push(new MultiDataSerie('Gas', dataSource));
         this.chart.data = this.dataSource;
         this.chart.update();
       });

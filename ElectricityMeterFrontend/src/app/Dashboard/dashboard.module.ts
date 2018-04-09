@@ -17,6 +17,8 @@ import { Electricityto1cardComponent } from '../Dashboard/components/electricity
 import {NgxCarouselModule} from 'ngx-carousel';
 import {HttpClientModule} from '@angular/common/http';
 import { Electricityto2cardComponent } from '../Dashboard/components/electricityto2card/electricityto2card.component';
+import {Ng4LoadingSpinnerModule} from 'ng4-loading-spinner';
+import { GascardComponent } from '../Dashboard/components/gascard/gascard.component';
 
 @NgModule({
   imports: [
@@ -28,14 +30,16 @@ import { Electricityto2cardComponent } from '../Dashboard/components/electricity
     SharedModule,
     ChartsModule,
     NgxCarouselModule,
+    Ng4LoadingSpinnerModule.forRoot(),
     NgHttpLoaderModule
   ],
   declarations: [DashboardpageComponent, TopbarComponent, SidebarComponent,
                 UserpageComponent, MeasurementpageComponent, HomepageComponent,
-                PaginationbarComponent, EnergyusagecardComponent, Electricityto1cardComponent, Electricityto2cardComponent],
+                PaginationbarComponent, EnergyusagecardComponent, Electricityto1cardComponent, Electricityto2cardComponent,
+                GascardComponent],
   exports: [DashboardpageComponent, TopbarComponent, SidebarComponent,
     UserpageComponent, MeasurementpageComponent, HomepageComponent,
-    PaginationbarComponent, EnergyusagecardComponent, Electricityto1cardComponent, Electricityto2cardComponent],
+    PaginationbarComponent, EnergyusagecardComponent, Electricityto1cardComponent, Electricityto2cardComponent, GascardComponent],
 
 })
 export class DashboardModule { }

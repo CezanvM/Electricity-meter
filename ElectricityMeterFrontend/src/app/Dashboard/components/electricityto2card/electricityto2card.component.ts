@@ -6,6 +6,7 @@ import {IBaseChart} from '../../../Shared/ngxCharts/basechart/basechart.interfac
 import {Request} from '../../../Shared/requests/classes/request.class';
 import {MultiDataSerie} from '../../../Shared/ngxCharts/basechart/multiItemSeries.class';
 import {AuthService} from '../../../login/services/auth.service';
+import {Ng4LoadingSpinnerService} from 'ng4-loading-spinner';
 
 @Component({
   selector: 'app-electricityto2card',
@@ -18,7 +19,7 @@ export class Electricityto2cardComponent implements OnInit, AfterViewInit {
   public chart: LineChart;
   public dataSource: MultiDataSerie[];
 
-  constructor(private dataService: ChartdataService) { }
+  constructor(private dataService: ChartdataService,  private spinnerService: Ng4LoadingSpinnerService) { }
 
   @ViewChild(LinechartcardComponent)
   lineChart: LinechartcardComponent;
@@ -29,8 +30,8 @@ export class Electricityto2cardComponent implements OnInit, AfterViewInit {
   ngOnInit() {
     this.chart = new LineChart(<IBaseChart>{
       data:  [],
-      xAxisLabel: 'tijd',
-      yAxisLabel: 'energie verbruik',
+      xAxisLabel: 'Time',
+      yAxisLabel: 'Electricity Usage (kWh)',
       showXAxisLabel: true,
       showYAxisLabel: true,
       xAxis: true,
@@ -46,6 +47,7 @@ export class Electricityto2cardComponent implements OnInit, AfterViewInit {
 
   OnDateSelected($event) {
     this.dataSource = [];
+    this.spinnerService.show();
     const request = new Request<any>();
     request.url = 'api/measurement';
     request.beginDate = $event.start;
@@ -57,6 +59,7 @@ export class Electricityto2cardComponent implements OnInit, AfterViewInit {
         this.dataSource.push(new MultiDataSerie('Electricity usage tariff 2', dataSource));
         this.chart.data = this.dataSource;
         this.chart.update();
+        this.spinnerService.hide();
       });
   }
 
