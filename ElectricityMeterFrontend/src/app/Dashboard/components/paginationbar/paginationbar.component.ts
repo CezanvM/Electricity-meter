@@ -17,7 +17,7 @@ export class PaginationbarComponent implements OnInit {
 
   ngOnInit() {
     this.subscribeToRouter();
-    this.getLastMeasurement();
+    //this.getLastMeasurement();
   }
 
   // private getLastMeasurement() {
