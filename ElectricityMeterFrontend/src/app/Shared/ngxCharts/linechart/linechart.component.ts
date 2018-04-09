@@ -51,7 +51,7 @@ export class CustomLineChartComponent implements OnInit, AfterViewInit, OnChange
     this.chartComponent.autoScale = this.chart.autoScale;
     this.chartComponent.tooltipDisabled = this.chart.disableTooltip;
     this.chartComponent.timeline = this.chart.timeline;
-    this.chartComponent.animations = false;
+    this.chartComponent.animations = true;
     this.chart.update();
   }
 }

@@ -7,6 +7,7 @@ import { LinechartcardComponent } from './linechart/linechartcard/linechartcard.
 import {ChartdataService} from './services/chartdata.service';
 import {DatepickerComponent} from '../datepicker/datepicker.component';
 import {Daterangepicker} from 'ng2-daterangepicker';
+import { BarchartComponent } from './barchart/barchart.component';
 
 @NgModule({
   imports: [
@@ -15,8 +16,8 @@ import {Daterangepicker} from 'ng2-daterangepicker';
     Daterangepicker,
     LoadingModule
   ],
-  declarations: [CustomLineChartComponent, LinechartcardComponent, DatepickerComponent],
-  exports: [CustomLineChartComponent, LinechartcardComponent, DatepickerComponent],
+  declarations: [CustomLineChartComponent, LinechartcardComponent, DatepickerComponent, BarchartComponent],
+  exports: [CustomLineChartComponent, LinechartcardComponent, DatepickerComponent, BarchartComponent],
   providers: [ChartdataService]
 })
 export class ChartsModule { }

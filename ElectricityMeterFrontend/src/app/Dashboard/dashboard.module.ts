@@ -19,6 +19,9 @@ import {HttpClientModule} from '@angular/common/http';
 import { Electricityto2cardComponent } from '../Dashboard/components/electricityto2card/electricityto2card.component';
 import {Ng4LoadingSpinnerModule} from 'ng4-loading-spinner';
 import { GascardComponent } from '../Dashboard/components/gascard/gascard.component';
+import { PayingspageComponent } from '../Dashboard/pages/payingspage/payingspage.component';
+import { PayingscardComponent } from '../Dashboard/components/payingscard/payingscard.component';
+import {ElectricitymeterService} from './services/electricitymeter.service';
 
 @NgModule({
   imports: [
@@ -36,10 +39,13 @@ import { GascardComponent } from '../Dashboard/components/gascard/gascard.compon
   declarations: [DashboardpageComponent, TopbarComponent, SidebarComponent,
                 UserpageComponent, MeasurementpageComponent, HomepageComponent,
                 PaginationbarComponent, EnergyusagecardComponent, Electricityto1cardComponent, Electricityto2cardComponent,
-                GascardComponent],
+                GascardComponent,
+                PayingspageComponent,
+                PayingscardComponent],
   exports: [DashboardpageComponent, TopbarComponent, SidebarComponent,
     UserpageComponent, MeasurementpageComponent, HomepageComponent,
     PaginationbarComponent, EnergyusagecardComponent, Electricityto1cardComponent, Electricityto2cardComponent, GascardComponent],
+  providers: [ElectricitymeterService]
 
 })
 export class DashboardModule { }

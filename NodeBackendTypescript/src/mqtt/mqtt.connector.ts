@@ -22,7 +22,7 @@ export class  MqttConnector {
             }
             // message is Buffer
             if (topic === measurementTopic) {
-                measurementController.handleMeasurement(message);
+                // measurementController.handleMeasurement(message);
             }
         });
     }

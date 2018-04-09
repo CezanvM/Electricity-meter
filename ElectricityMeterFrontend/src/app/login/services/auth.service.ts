@@ -57,6 +57,10 @@ export class AuthService implements  OnDestroy {
   }
 
   public isLoggedIn() {
+    if (this.getExpiration() == null) {
+      return false;
+    }
+
     return moment().isBefore(this.getExpiration());
   }
 

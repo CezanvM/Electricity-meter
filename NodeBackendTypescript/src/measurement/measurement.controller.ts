@@ -1,7 +1,7 @@
 import { IMeasurement } from './measurement.interface';
 import { measurementRepo, MeasurementRepository } from './measurement.repository';
 import { NextFunction, Request, Response } from 'express';
-import { measurement } from './measurement.model';
+import {measurement, measurementSchema} from './measurement.model';
 import moment = require('moment');
 import { filter } from 'gulp-typescript';
 
@@ -29,6 +29,16 @@ export class MeasurementController {
 
     public get(req: Request, res: Response, next: NextFunction) {
         new MeasurementRepository().findById(req.params.id, (err, measurement: IMeasurement) => {
+            if (err) return res.status(500).send('internal server error');
+
+            if (!measurement) return res.status(404).send('measurement not found');
+
+            return res.status(200).json(measurement);
+        });
+    }
+
+    public getLast(req: Request, res: Response, next: NextFunction) {
+        measurement.findOne({}, [], { $orderby : { createdAt : -1 } }, (err, measurement) => {
             if (err) return res.status(500).send('internal server error');
 
             if (!measurement) return res.status(404).send('measurement not found');
