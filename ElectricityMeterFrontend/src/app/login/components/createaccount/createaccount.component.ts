@@ -1,5 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {User} from '../../../data/user/user.class';
+import {User} from '../../../user/user/user.class';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {AuthService} from '../../services/auth.service';
 import {SweetAlertService} from 'ngx-sweetalert2';

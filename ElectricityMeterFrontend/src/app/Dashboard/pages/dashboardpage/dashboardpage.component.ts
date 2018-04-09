@@ -6,7 +6,7 @@ import 'rxjs/add/operator/finally';
 import {animate, style, query, group, transition, trigger, keyframes, stagger} from '@angular/animations';
 import {AuthService} from '../../../login/services/auth.service';
 import {HttpClient} from '@angular/common/http';
-import {User} from '../../../data/user/user.class';
+import {User} from '../../../user/user/user.class';
 import 'rxjs/add/operator/take';
 
 @Component({

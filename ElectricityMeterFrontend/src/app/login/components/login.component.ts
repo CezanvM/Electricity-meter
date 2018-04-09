@@ -1,7 +1,7 @@
 import {Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {AuthService} from '../services/auth.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {User} from '../../data/user/user.class';
+import {User} from '../../user/user/user.class';
 import {SweetAlertService} from 'ngx-sweetalert2';
 
 @Component({

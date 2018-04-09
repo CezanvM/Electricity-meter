@@ -5,7 +5,7 @@ import 'rxjs/add/operator/shareReplay';
 import 'rxjs/add/operator/takeUntil';
 import 'rxjs/add/operator/filter';
 import * as moment from 'moment';
-import { User } from '../../data/user/user.class';
+import { User } from '../../user/user/user.class';
 import {Subject} from 'rxjs/Subject';
 
 @Injectable()
