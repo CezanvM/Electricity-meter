@@ -44,6 +44,7 @@ export class Electricityto1cardComponent implements OnInit, AfterViewInit {
   }
 
   OnDateSelected($event) {
+    this.dataSource = [];
     const request = new Request<any>();
     request.url = 'api/measurement';
     request.beginDate = $event.start;

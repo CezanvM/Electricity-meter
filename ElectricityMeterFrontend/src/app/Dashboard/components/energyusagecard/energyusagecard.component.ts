@@ -41,6 +41,7 @@ export class EnergyusagecardComponent implements OnInit {
   }
 
   OnDateSelected($event) {
+    this.dataSource = [];
     const request = new Request<any>();
     request.url = 'api/measurement';
     request.beginDate = $event.start;

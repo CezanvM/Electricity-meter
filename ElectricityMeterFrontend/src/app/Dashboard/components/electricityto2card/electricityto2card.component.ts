@@ -45,6 +45,7 @@ export class Electricityto2cardComponent implements OnInit, AfterViewInit {
   }
 
   OnDateSelected($event) {
+    this.dataSource = [];
     const request = new Request<any>();
     request.url = 'api/measurement';
     request.beginDate = $event.start;
@@ -53,7 +54,7 @@ export class Electricityto2cardComponent implements OnInit, AfterViewInit {
 
     this.dataService.getMultiDataSourceWithDate<number>('electricityTo2', 'timestamp', request)
       .subscribe((dataSource) => {
-        this.dataSource.push(new MultiDataSerie('Electricity usage tariff 1', dataSource));
+        this.dataSource.push(new MultiDataSerie('Electricity usage tariff 2', dataSource));
         this.chart.data = this.dataSource;
         this.chart.update();
       });
