@@ -1,18 +1,18 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
 import {ChartdataService} from '../../../Shared/ngxCharts/services/chartdata.service';
 import {LineChart} from '../../../Shared/ngxCharts/linechart/classes/linechart.class';
 import {Request} from '../../../Shared/requests/classes/request.class';
 import {IBaseChart} from '../../../Shared/ngxCharts/basechart/basechart.interface';
 import {MultiDataSerie} from '../../../Shared/ngxCharts/basechart/multiItemSeries.class';
-import * as moment from 'moment';
+import {AuthService} from '../../../login/services/auth.service';
 import {LinechartcardComponent} from '../../../Shared/ngxCharts/linechart/linechartcard/linechartcard.component';
 
 @Component({
-  selector: 'app-energyusagecard',
-  templateUrl: './energyusagecard.component.html',
-  styleUrls: ['./energyusagecard.component.scss']
+  selector: 'app-electricityto1card',
+  templateUrl: './electricityto1card.component.html',
+  styleUrls: ['./electricityto1card.component.scss']
 })
-export class EnergyusagecardComponent implements OnInit {
+export class Electricityto1cardComponent implements OnInit, AfterViewInit {
 
   public chart: LineChart;
   public dataSource: MultiDataSerie[];
@@ -21,6 +21,9 @@ export class EnergyusagecardComponent implements OnInit {
 
   @ViewChild(LinechartcardComponent)
   lineChart: LinechartcardComponent;
+
+  ngAfterViewInit(): void {
+  }
 
   ngOnInit() {
     this.chart = new LineChart(<IBaseChart>{
@@ -47,9 +50,9 @@ export class EnergyusagecardComponent implements OnInit {
     request.endDate = $event.end;
     request.filter = {sensorId: localStorage.getItem('sensorId')};
 
-    this.dataService.getMultiDataSourceWithDate<number>('activePowerPlus', 'timestamp', request)
+    this.dataService.getMultiDataSourceWithDate<number>('electricityTo1', 'timestamp', request)
       .subscribe((dataSource) => {
-        this.dataSource.push(new MultiDataSerie('Active Power Plus', dataSource));
+        this.dataSource.push(new MultiDataSerie('Electricity usage tariff 1', dataSource));
         this.chart.data = this.dataSource;
         this.chart.update();
       });

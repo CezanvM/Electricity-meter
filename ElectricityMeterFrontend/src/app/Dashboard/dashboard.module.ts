@@ -13,11 +13,10 @@ import { MeasurementpageComponent } from '../Dashboard/pages/measurementpage/mea
 import { HomepageComponent } from '../Dashboard/pages/homepage/homepage.component';
 import { PaginationbarComponent } from '../Dashboard/components/paginationbar/paginationbar.component';
 import { EnergyusagecardComponent } from '../Dashboard/components/energyusagecard/energyusagecard.component';
-import { ElectricitytocardComponent } from '../Dashboard/components/electricitytocard/electricitytocard.component';
+import { Electricityto1cardComponent } from '../Dashboard/components/electricityto1card/electricityto1card.component';
 import {NgxCarouselModule} from 'ngx-carousel';
 import {HttpClientModule} from '@angular/common/http';
-import {Daterangepicker} from 'ng2-daterangepicker';
-import { DatepickerComponent } from '../Shared/datepicker/datepicker.component';
+import { Electricityto2cardComponent } from '../Dashboard/components/electricityto2card/electricityto2card.component';
 
 @NgModule({
   imports: [
@@ -33,10 +32,10 @@ import { DatepickerComponent } from '../Shared/datepicker/datepicker.component';
   ],
   declarations: [DashboardpageComponent, TopbarComponent, SidebarComponent,
                 UserpageComponent, MeasurementpageComponent, HomepageComponent,
-                PaginationbarComponent, EnergyusagecardComponent, ElectricitytocardComponent],
+                PaginationbarComponent, EnergyusagecardComponent, Electricityto1cardComponent, Electricityto2cardComponent],
   exports: [DashboardpageComponent, TopbarComponent, SidebarComponent,
     UserpageComponent, MeasurementpageComponent, HomepageComponent,
-    PaginationbarComponent, EnergyusagecardComponent, ElectricitytocardComponent],
+    PaginationbarComponent, EnergyusagecardComponent, Electricityto1cardComponent, Electricityto2cardComponent],
 
 })
 export class DashboardModule { }
