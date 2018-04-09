@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, NavigationEnd, Router} from '@angular/router';
 import 'rxjs/add/operator/mergeMap';
+import {ElectricitymeterService} from '../../services/electricitymeter.service';
 
 @Component({
   selector: 'app-paginationbar',
@@ -11,11 +12,19 @@ export class PaginationbarComponent implements OnInit {
 
   public title = '';
   public icon = '';
-  constructor(private router: Router, private activatedRoute: ActivatedRoute) { }
+  public currentElectricity = 0;
+  constructor(private router: Router, private activatedRoute: ActivatedRoute, private service: ElectricitymeterService) { }
 
   ngOnInit() {
     this.subscribeToRouter();
+    this.getLastMeasurement();
   }
+
+  // private getLastMeasurement() {
+  //   this.service.getLastMeasurment().subscribe((measurement) => {
+  //     this.currentElectricity = measurement.electricityTo1;
+  //   });
+  // }
 
   private subscribeToRouter() {
     this.router.events

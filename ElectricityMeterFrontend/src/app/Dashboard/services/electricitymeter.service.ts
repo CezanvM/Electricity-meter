@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable()
 export class ElectricitymeterService {
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
-  getCurrentElectricity() {
-
+  getLastMeasurment() {
+      return this.http.get('api/measurement/last');
   }
 
 }
